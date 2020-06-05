@@ -2,6 +2,7 @@
   "name": "bglogger",
   "version": "0.1.0",
   "private": true,
+  "homepage": "./",
   "proxy": "http://161.35.221.47/bglogger",
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
