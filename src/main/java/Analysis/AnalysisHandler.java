@@ -67,6 +67,7 @@ public class AnalysisHandler {
         System.out.println("Event Que Processed. Starting Analysis:");
         analysis.stream()
                 .forEach(Analysis::start);
+        
     }
 
     public void AddAnalysis(Analysis _analysi) {
@@ -78,7 +79,7 @@ public class AnalysisHandler {
     }
     
     void submitResult(Result res,Class<?> sender) {
-        System.out.println("Result submitter from: " +sender.getName());
+        System.out.println("Result submitted from: " +sender.getName());
         //TODO hand to frontend
 
         
