@@ -23,7 +23,7 @@ enum AnalasysTypes {
 public abstract class Analysis {
 
     final String initiator;
-    
+    Result ResultSet = new Result();
     final AnalysisHandler instance;
 
     public Analysis(String _initiator,AnalysisHandler _instance) {
@@ -37,6 +37,7 @@ public abstract class Analysis {
             Setup();
             run();
             shutdown();
+            instance.submitResult(ResultSet, this.getClass());
         };
         return runnableTask;
     }

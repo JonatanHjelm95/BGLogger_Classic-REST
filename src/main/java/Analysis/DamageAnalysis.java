@@ -7,6 +7,7 @@ package Analysis;
 
 import EventHandler.Event;
 import EventHandler.MyEventType;
+import GrafikObjects.DataLine;
 import GrafikObjects.Plot;
 import Listeners.Listener;
 import java.util.ArrayList;
@@ -80,12 +81,24 @@ public class DamageAnalysis extends Analysis {
         plotRangesPM.X = SpellsPM.keySet().toArray(new Double[SpellsPM.keySet().size()]);
         plotRangesPM.Y = SpellsPM.values().toArray(new Double[SpellsPM.values().size()]);
         
-        int swingSum = Swings.stream().mapToInt(s->Integer.parseInt(s.getData()[25])).sum();
-        int spellSum = Spells.stream().mapToInt(s->Integer.parseInt(s.getData()[26])).sum();
-        int rangedSum = Ranged.stream().mapToInt(s->Integer.parseInt(s.getData()[28])).sum();
+        DataLine SumRanged= new DataLine();
+        DataLine SumSpell= new DataLine();
+        DataLine SumSwing= new DataLine();
+        SumRanged.Name ="Sum of ranged dmg";
+        SumRanged.datapoint = Swings.stream().mapToInt(s->Integer.parseInt(s.getData()[25])).sum();
+        SumSpell.Name = "Sum of spell dmg";
+        SumSpell.datapoint = Spells.stream().mapToInt(s->Integer.parseInt(s.getData()[26])).sum();
+        SumSwing.Name = "Sum of autoAttack dmg";
+        SumSwing.datapoint = Ranged.stream().mapToInt(s->Integer.parseInt(s.getData()[28])).sum();
         
-        Result results = new Result();
-        instance.submitResult(results, this.getClass());
+        
+        ResultSet.addPlot(plotSwingsPM);
+        ResultSet.addPlot(plotRangesPM);
+        ResultSet.addPlot(plotSpellsPM);
+        ResultSet.addData(SumSwing);
+        ResultSet.addData(SumRanged);
+        ResultSet.addData(SumSpell);
+        
     }
 
     @Listener(event = MyEventType.SPELL_DAMAGE)

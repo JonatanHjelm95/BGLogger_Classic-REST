@@ -29,7 +29,6 @@ public class ActionAnalysis extends Analysis{
     List<Event> Attempts = new ArrayList<>();
     List<Event> Succeses = new ArrayList<>();
     List<Event> Fails = new ArrayList<>();
-    Result results = new Result();
 
     public ActionAnalysis(String _initiator, AnalysisHandler _instance) {
         super(_initiator, _instance);
@@ -57,12 +56,12 @@ public class ActionAnalysis extends Analysis{
 
     @Override
     void run() {
-        
+        double succesFailScore = 0;
         double succesPercent = Succeses.size() / Attempts.size();
         try {
-            double succesFailScore = Succeses.size() / Fails.size();
+            succesFailScore = Succeses.size() / Fails.size();
         } catch (Exception e) {
-            double succesFailScore = 0;
+           
         }
         
         Long t0 = Attempts.get(0).getDate().getTime();
@@ -106,18 +105,16 @@ public class ActionAnalysis extends Analysis{
         DataLine d2 = new DataLine();
         d1.datapoint = succesPercent;
         d1.Name="Succes%";
-        //d2.datapoint = succesFailScore;
+        d2.datapoint = succesFailScore;
         d2.Name="SpellCast fail score";
         
-        results.addData(d1);
-        results.addData(d2);
+        ResultSet.addData(d1);
+        ResultSet.addData(d2);
         
-        results.addPlot(plotAPM);
-        //results.addPlot(plotFPM);
-        //results.addPlot(plotCPM);
+        ResultSet.addPlot(plotAPM);
+        ResultSet.addPlot(plotFPM);
+        ResultSet.addPlot(plotCPM);
         
-
-        instance.submitResult(results, this.getClass() );
         
     }
 
