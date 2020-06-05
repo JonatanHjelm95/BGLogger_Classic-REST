@@ -1,5 +1,5 @@
 /* eslint-disable no-throw-literal */
-const URL = "http://161.35.221.47/BGLogger-REST";
+const URL = "http://161.35.221.47/bglogger";
 
 
 

@@ -1,7 +1,5 @@
 import React from 'react';
 import DropZone from './DropZone'
-import { BrowserRouter as Router, NavLink, Switch, Route } from 'react-router-dom';
-
 
 
 
@@ -18,7 +16,6 @@ class Analyze extends React.Component {
     return (
       <div>
         <DropZone />
-
       </div>
     );
   }

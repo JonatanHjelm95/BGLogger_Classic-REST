@@ -1,6 +1,5 @@
 import React from 'react';
 import './App.css';
-import DropZone from './Components/DropZone'
 import Navigation from './Navigation';
 
 function App() {
