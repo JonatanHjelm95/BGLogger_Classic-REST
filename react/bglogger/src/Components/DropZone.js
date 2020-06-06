@@ -13,6 +13,7 @@ class DropZone extends Component {
             processed: false,
             loading: false,
             encodedData: '',
+            combatLog: [],
             units: [],
             selectedUnit: '',
         }
@@ -40,13 +41,16 @@ class DropZone extends Component {
             const reader = new FileReader()
             reader.onload = async () => {
                 const binaryStr = reader.result
-                const encodedData = base64.encode(binaryStr)
+                //const encodedData = base64.encode(binaryStr)
+                let combatLog = binaryStr.split('\n')
                 var unitNames = this.getAllUnitsFromFile(binaryStr)
                 this.setState({
-                    encodedData: encodedData,
+                    //encodedData: encodedData,
+                    combatLog: combatLog,
                     units: unitNames,
                     processed: true
                 })
+                console.log(this.state.combatLog)
                 this.createUnitSelectItems()
             }
             reader.readAsText(file)
@@ -94,27 +98,27 @@ class DropZone extends Component {
     }
 
     async analyze(player, data) {
-        var res = await facade.startAnalyzation(player, data)
-        console.log(res)
+        var res = await facade.startAnalyzation(player, JSON.parse(JSON.stringify(data)))
+        //console.log(player)
+        //console.log(JSON.stringify(data))
     }
 
     changeUnit(evt) {
         evt.persist()
         this.setState({
-            selectedUnit: evt.target.value
+            selectedUnit: evt.target.value.replace('"','')
         })
     }
 
     render() {
         return (
             <div>
-            <Contact />
                 <Dropzone onDrop={file => this.validateFile(file)}>
                     {({ getRootProps, getInputProps }) => (
                         <section>
                             <div {...getRootProps()}>
                                 <input {...getInputProps()} />
-                                <p>Drag 'n' drop your CombatLog.txt here, or click to browse file</p>
+                                <p>Drop your CombatLog.txt here, or click to browse files</p>
                             </div>
                         </section>
                     )}
@@ -127,10 +131,11 @@ class DropZone extends Component {
                                 {this.state.units}
                             </select>
                         </div>
-                        {this.state.selectedUnit.length > 0 ? (<button onClick={(evt) => this.analyze(this.state.selectedUnit, this.state.encodedData)}>Analyze</button>) : (<div></div>)}
+                        {this.state.selectedUnit.length > 0 ? (<button onClick={(evt) => this.analyze(this.state.selectedUnit, this.state.combatLog)}>Analyze</button>) : (<div></div>)}
                     </div>
                 ) : (<div></div>)}
 
+                <Contact initiator={this.state.selectedUnit} />
 
             </div>
 
