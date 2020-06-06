@@ -13,6 +13,8 @@ import Listeners.ListenerHolder;
 import RealTime.CettiaBootstrap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import io.cettia.Server;
 import static io.cettia.ServerSocketPredicates.tag;
 import java.io.IOException;
@@ -42,14 +44,14 @@ public class AnalysisHandler {
     public String getSubmittingPlayer() {
         return "";
     }
-    public AnalysisHandler(String initiator, String data) throws IOException, InterruptedException{
+    public AnalysisHandler(String initiator, JsonArray data) throws IOException, InterruptedException{
         eh = new EventHandler();
         this.initiator = initiator;
         analysis.add(new ActionAnalysis(initiator, this));
         analysis.add(new DamageAnalysis(initiator, this));
         analysis.add(new ChainedAnalysis(initiator, this));
         AddListeners();
-        FileHandler.FileReaderFromBase64(eh, data);
+        FileHandler.readFromJson(eh, data);
         while (!eh.eventlogComplete()) {            
             sleep(100);
         }

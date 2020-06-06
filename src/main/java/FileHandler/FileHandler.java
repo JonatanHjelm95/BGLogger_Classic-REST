@@ -6,6 +6,9 @@
 package FileHandler;
 
 import EventHandler.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -95,6 +98,13 @@ public class FileHandler {
                 sc.close();
             }
         }
+    }
+    
+    public static void readFromJson(EventHandler eh, JsonArray data){
+        for (int i = 0; i < data.size(); i++) {
+            eh.addEvent(createInput(data.get(i).getAsJsonObject().get(""+i).getAsString().replace("\\", "")));
+        }
+        
     }
 
     public static void main(String[] args) throws IOException {

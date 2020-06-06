@@ -59,8 +59,9 @@ public class Input implements Event {
 
     @Override
     public Date getDate() {
+        String dateString = _date + _time;
         try {
-            return new SimpleDateFormat("dd/MM").parse(_date);
+            return new SimpleDateFormat("dd/MM/hh/mm/ss").parse(dateString);
         } catch (ParseException ex) {
             Logger.getLogger(Input.class.getName()).log(Level.SEVERE, null, ex);
         }
