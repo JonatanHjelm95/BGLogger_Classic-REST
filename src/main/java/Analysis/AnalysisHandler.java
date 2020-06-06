@@ -106,14 +106,14 @@ public class AnalysisHandler {
     void submitResult(Result res, Class<?> sender) {
         System.out.println("Result submitted from: " + sender.getName());
         //TODO hand to frontend
-        /**
+        
         Gson GSON = new GsonBuilder().setPrettyPrinting().create();
         Server S = CettiaBootstrap.getServer();
         Map<String, Object> output = new LinkedHashMap<>();
         output.put("sender", sender.getName());
         output.put("text", GSON.toJson(res));
         S.find(tag("channel:log")).send("message", output);
-        * */
+        
         analysis.stream()
                 .filter(a -> Arrays.asList(a.getClass().getInterfaces()).contains(Plugable.class))
                 .forEach(a -> {
