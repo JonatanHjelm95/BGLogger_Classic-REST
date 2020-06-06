@@ -100,7 +100,7 @@ public class FileHandler {
 
     public static void writeFile(byte[] byteArray) {
         try {
-            FileUtils.writeByteArrayToFile(new File("WoWCombatLog.txt"), byteArray);
+            FileUtils.writeByteArrayToFile(new File("\\root\\BGLogger_Classic-REST\\WoWCombatLog.txt"), byteArray);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -115,7 +115,7 @@ public class FileHandler {
         FileInputStream inputStream = null;
         Scanner sc = null;
         try {
-            inputStream = new FileInputStream("WoWCombatLog.txt");
+            inputStream = new FileInputStream("\\root\\BGLogger_Classic-REST\\WoWCombatLog.txt");
             sc = new Scanner(inputStream, "UTF-8");
             while (sc.hasNextLine()) {
                 String line = sc.nextLine();

@@ -32,6 +32,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -101,17 +102,25 @@ public class AnalysisResource {
     }
 
     @POST
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Produces(MediaType.TEXT_PLAIN)
     @Path("upload")
-    public Response submit(InputStream fileStream) {
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String submit(@FormDataParam("initiator") String initiator, @FormDataParam("file") InputStream file) {
         try {
-            byte[] fileByteArray = convertInputStreamToByteArrary(fileStream);
-            AnalysisHandler ah = new AnalysisHandler("Drillenissen-Firemaw", fileByteArray);
-        } catch ( Exception ex) {
-            return Response.status(600).entity(ex.getMessage()).build();
+            byte[] fileByteArray = convertInputStreamToByteArrary(file);
+            AnalysisHandler ah = new AnalysisHandler(initiator, fileByteArray);
+        } 
+        catch ( IllegalStateException ex) {
+            ex.printStackTrace();
         }
-        return Response.status(200).entity("Success").build();
+        catch ( IOException ex) {
+            ex.printStackTrace();
+        }
+        catch ( InterruptedException ex) {
+            ex.printStackTrace();
+        }
+        
+        return GSON.toJson("Success");
     }
 
     public static byte[] convertInputStreamToByteArrary(InputStream in) throws IOException {
