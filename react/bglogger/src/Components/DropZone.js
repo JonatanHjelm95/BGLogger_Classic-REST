@@ -107,11 +107,14 @@ class DropZone extends Component {
     }
 
     async analyze(player, data) {
-        /* await facade.startAnalyzation(player, JSON.parse(JSON.stringify(data)))
+        const formData = data
+        formData.append('initiator', player)
+        await facade.uploadLog(formData)
+        // await facade.startAnalyzation(player, data)
         this.setState({
             analyzeInitiated: true
-        }) */
-        await facade.uploadLog(data)
+        })
+        
         //console.log(player)
         //console.log(JSON.stringify(data))
     }
