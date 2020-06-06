@@ -110,14 +110,8 @@ public class AnalysisResource {
             byte[] fileByteArray = convertInputStreamToByteArrary(file);
             AnalysisHandler ah = new AnalysisHandler(initiator, fileByteArray);
         } 
-        catch ( IllegalStateException ex) {
-            ex.printStackTrace();
-        }
-        catch ( IOException ex) {
-            ex.printStackTrace();
-        }
-        catch ( InterruptedException ex) {
-            ex.printStackTrace();
+        catch ( IllegalStateException | IOException | InterruptedException ex) {
+            return GSON.toJson(ex);
         }
         
         return GSON.toJson("Success");
