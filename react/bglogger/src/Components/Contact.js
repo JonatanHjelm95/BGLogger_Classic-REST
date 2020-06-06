@@ -57,8 +57,8 @@ class Contact extends React.Component {
     }
 
     componentDidMount() {
-        //let uri = `http://localhost:8080/jpareststarter/cettia?token=log`;
-        let uri = 'http://161.35.221.47/bglogger/cettia?token=log';
+        let uri = `http://localhost:8080/jpareststarter/cettia?token=log`;
+
 
         this.socket = cettia.open(uri);
         const addSystemMessage = text => this.addMessage({ sender: "system", text });
