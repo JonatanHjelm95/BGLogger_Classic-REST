@@ -9,6 +9,7 @@ import Analysis.AnalysisHandler;
 import RealTime.CettiaBootstrap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.cettia.Server;
@@ -38,19 +39,19 @@ public class AnalysisResource {
     @Context
     private UriInfo context;
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String Test() {
         return "helloSenior";
     }
-    
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("test")
     public String testAnalyzizzz(){
         String data = "C:\\Users\\Jutsu\\Downloads\\WoWCombatLog (2).txt";
+
         try {
             AnalysisHandler ah = new AnalysisHandler("Maloni-Mograine", data);
         } catch (IOException ex) {
@@ -60,12 +61,13 @@ public class AnalysisResource {
         }
         return "helloSenior";
     }
-    
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("Stream")
     public String StreamTest() {
         Server S = CettiaBootstrap.getServer();
+
         Map<String, Object> output = new LinkedHashMap<>();
         output.put("sender", "Example/Stream");
         output.put("text", "Enpoint called");
@@ -73,7 +75,7 @@ public class AnalysisResource {
         System.out.println("did stream");
         return "{\"msg\":\"Hello anonymous\"}";
     }
-    
+
     @Path("postlog")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -81,20 +83,29 @@ public class AnalysisResource {
     public String analyze(String jsonString) {
         JsonObject json = new JsonParser().parse(jsonString).getAsJsonObject();
         String initiator = json.get("initiator").getAsString();
-        String data = json.get("data").getAsString(); 
+        JsonArray data = json.get("data").getAsJsonArray();
+//        String line = GSON.fromJson(data.get(0), String.class).replace("\\", "");
+//
+//        //Splitting on whitespaces IOT get date and time
+//        String[] lineSplit = line.split("  ");
+//        String[] dates = lineSplit[0].split(" ");
+//        String date = dates[0];
+//        String time = dates[1];
+//        return GSON.toJson(time);
+//        String line = GSON.fromJson(data.get(1), String.class);
+//        String[] dates = line.split(" ");
+//        String eventString = line.split("  ")[1];
+//
+//        return GSON.toJson(eventString);
+
         try {
-            
             AnalysisHandler a = new AnalysisHandler(initiator, data);
-            
-            return GSON.toJson("der er hul igennem");
-         
-            //Return resultObject
+            return GSON.toJson("Analyzing CombatLog");
+        } catch (IOException io) {
+            GSON.toJson(io.toString());
+        } catch (InterruptedException i) {
+            GSON.toJson(i.toString());
         }
-        catch (IOException e) {
-            return GSON.toJson(e.toString());
-        } catch (InterruptedException ex) {
-            Logger.getLogger(AnalysisResource.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return "";
+        return GSON.toJson(data.get(0));
     }
 }

@@ -62,6 +62,7 @@ public class Input implements Event {
     public Date getDate() {
         try {
             return new SimpleDateFormat("dd/MM hh:mm:ss.SSS").parse(_date+" "+_time);
+
         } catch (ParseException ex) {
             Logger.getLogger(Input.class.getName()).log(Level.SEVERE, null, ex);
         }

@@ -6,6 +6,11 @@
 package FileHandler;
 
 import EventHandler.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,6 +31,8 @@ import java.util.Scanner;
  * @author jonab
  */
 public class FileHandler {
+
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     public static void FileReaderFromBase64(EventHandler eh, String encodedData) throws FileNotFoundException, IOException {
         Arrays.asList(new String(Base64.getDecoder()
@@ -68,6 +75,23 @@ public class FileHandler {
         }
     }
 
+    private static Input createInputFromJson(String line) {
+        //String line = GSON.fromJson(json, String.class).replace("\\", "");
+
+        //Splitting on whitespaces IOT get date and time
+        String[] lineSplit = line.split("  ");
+        String[] dates = lineSplit[0].split(" ");
+        String date = dates[0];
+        String time = dates[1];
+        String[] eventString = lineSplit[1].split(",");
+        try {
+
+            return new Input(date, time, eventString, MyEventType.valueOf(eventString[0]));
+        } catch (IllegalArgumentException e) {
+            return new Input(date, time, eventString, MyEventType.OTHER);
+        }
+    }
+
     private static boolean advancedCombatLog(String line) {
         return Integer.parseInt(line.split(",")[3]) == 1;
     }
@@ -99,6 +123,18 @@ public class FileHandler {
             }
             
         }
+    }
+
+    public static void readFromJson(EventHandler eh, JsonArray data) {
+        for (int i = 0; i < data.size()-1; i++) {
+                eh.addEvent(createInputFromJson(GSON.fromJson(data.get(i), String.class)));
+//            try {
+//                
+//            }catch (ArrayIndexOutOfBoundsException e){
+//                
+//            }
+        }
+
     }
 
     public static void main(String[] args) throws IOException {

@@ -24,15 +24,24 @@ class Contact extends React.Component {
                 "msg": "velkommen",
                 "api": "Ingen"
             }
-            ]
+            ],
+            initiator: this.props.initiator
         }
-        
-        
+
+
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.initiator != this.state.initiator) {
+            this.setState({
+                initiator: nextProps.initiator
+            })
+        }
     }
 
     addMessage = ({ sender, text }) => console.log(`${sender} sends ${text}`);
 
-    addRow = ({sender,text}) =>{
+    addRow = ({ sender, text }) => {
         console.log(text)
         var obj = {
             "msg": text,
@@ -40,15 +49,16 @@ class Contact extends React.Component {
         }
         console.log("woo")
         const { stream } = this.state;
-		var list = this.state.stream;
-		list.unshift(obj);
+        var list = this.state.stream;
+        list.unshift(obj);
 
-		this.setState({ stream: list})
+        this.setState({ stream: list })
 
     }
 
-    componentDidMount(){
-        let uri = `http://localhost:8080/jpareststarter/cettia?token=log`;
+    componentDidMount() {
+        //let uri = `http://localhost:8080/jpareststarter/cettia?token=log`;
+        let uri = 'http://161.35.221.47/bglogger/cettia?token=log';
 
         this.socket = cettia.open(uri);
         const addSystemMessage = text => this.addMessage({ sender: "system", text });
@@ -58,18 +68,18 @@ class Contact extends React.Component {
         this.socket.on("open", () => addSystemMessage("The socket establishes a connection."));
         this.socket.on("close", () => addSystemMessage("All transports failed to connect or the connection was disconnected."));
         this.socket.on("waiting", (delay) => addSystemMessage(`The socket will reconnect after ${delay} ms`));
-        this.socket.once("open", () => setInterval(() => this.socket.send("message", {text: `A message - ${Date.now()}`}), 5000));
+        this.socket.once("open", () => setInterval(() => this.socket.send("message", { text: `A message - ${Date.now()}` }), 5000));
     }
 
     render() {
         return (
             <div>
                 <h1>
-                    Dette er en liste der hele tiden modtager hvad det seneste kald til API'en er.
+                    Results.
                 </h1>
                 <table className="tg">
                     <thead>
-                        <th>Besked</th>
+                        <th>{this.state.initiator}</th>
                         <th>API kaldt</th>
                     </thead>
                     {
