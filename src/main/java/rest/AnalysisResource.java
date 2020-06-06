@@ -39,11 +39,17 @@ public class AnalysisResource {
     private UriInfo context;
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public String Test() {
+        return "helloSenior";
+    }
     
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("Stream")
-    public String tests() {
+    public String StreamTest() {
         Server S = CettiaBootstrap.getServer();
         Map<String, Object> output = new LinkedHashMap<>();
         output.put("sender", "Example/Stream");
