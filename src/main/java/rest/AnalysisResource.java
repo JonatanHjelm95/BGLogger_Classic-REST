@@ -55,6 +55,7 @@ public class AnalysisResource {
         output.put("sender", "Example/Stream");
         output.put("text", "Enpoint called");
         S.find(tag("channel:log")).send("message", output);
+        System.out.println("did stream");
         return "{\"msg\":\"Hello anonymous\"}";
     }
     
