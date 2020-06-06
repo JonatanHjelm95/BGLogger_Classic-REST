@@ -14,7 +14,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.cettia.Server;
 import static io.cettia.ServerSocketPredicates.tag;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -22,11 +25,14 @@ import java.util.logging.Logger;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import org.slf4j.LoggerFactory;
 
 /**
  * REST Web Service
@@ -46,22 +52,21 @@ public class AnalysisResource {
         return "helloSenior";
     }
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("test")
-    public String testAnalyzizzz(){
-        String data = "C:\\Users\\Jutsu\\Downloads\\WoWCombatLog (2).txt";
-
-        try {
-            AnalysisHandler ah = new AnalysisHandler("Maloni-Mograine", data,"wohoo");
-        } catch (IOException ex) {
-            Logger.getLogger(AnalysisResource.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(AnalysisResource.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return "helloSenior";
-    }
-
+//    @GET
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Path("test")
+//    public String testAnalyzizzz() {
+//        //String data = "C:\\Users\\Jutsu\\Downloads\\WoWCombatLog (2).txt";
+//        String data = "C:\\Users\\jonab\\Desktop\\WoWCombatLog.txt";
+//        try {
+//            AnalysisHandler ah = new AnalysisHandler("Maloni-Mograine", data, "wohoo");
+//        } catch (IOException ex) {
+//            Logger.getLogger(AnalysisResource.class.getName()).log(Level.SEVERE, null, ex);
+//        } catch (InterruptedException ex) {
+//            Logger.getLogger(AnalysisResource.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//        return "helloSenior";
+//    }
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("Stream")
@@ -84,20 +89,6 @@ public class AnalysisResource {
         JsonObject json = new JsonParser().parse(jsonString).getAsJsonObject();
         String initiator = json.get("initiator").getAsString();
         JsonArray data = json.get("data").getAsJsonArray();
-//        String line = GSON.fromJson(data.get(0), String.class).replace("\\", "");
-//
-//        //Splitting on whitespaces IOT get date and time
-//        String[] lineSplit = line.split("  ");
-//        String[] dates = lineSplit[0].split(" ");
-//        String date = dates[0];
-//        String time = dates[1];
-//        return GSON.toJson(time);
-//        String line = GSON.fromJson(data.get(1), String.class);
-//        String[] dates = line.split(" ");
-//        String eventString = line.split("  ")[1];
-//
-//        return GSON.toJson(eventString);
-
         try {
             AnalysisHandler a = new AnalysisHandler(initiator, data);
             return GSON.toJson("Analyzing CombatLog");
@@ -107,5 +98,32 @@ public class AnalysisResource {
             GSON.toJson(i.toString());
         }
         return GSON.toJson(data.get(0));
+    }
+
+    @POST
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.TEXT_PLAIN)
+    @Path("upload")
+    public Response submit(InputStream fileStream) {
+        try {
+            byte[] fileByteArray = convertInputStreamToByteArrary(fileStream);
+            AnalysisHandler ah = new AnalysisHandler("Drillenissen-Firemaw", fileByteArray);
+        } catch ( Exception ex) {
+            return Response.status(600).entity(ex.getMessage()).build();
+        }
+        return Response.status(200).entity("Success").build();
+    }
+
+    public static byte[] convertInputStreamToByteArrary(InputStream in) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        final int BUF_SIZE = 1024;
+        byte[] buffer = new byte[BUF_SIZE];
+        int bytesRead = -1;
+        while ((bytesRead = in.read(buffer)) > -1) {
+            out.write(buffer, 0, bytesRead);
+        }
+        in.close();
+        byte[] byteArray = out.toByteArray();
+        return byteArray;
     }
 }
