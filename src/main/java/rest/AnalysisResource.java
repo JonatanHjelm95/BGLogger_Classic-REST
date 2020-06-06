@@ -66,9 +66,11 @@ public class AnalysisResource {
     public String analyze(String jsonString) {
         JsonObject json = new JsonParser().parse(jsonString).getAsJsonObject();
         String initiator = json.get("initiator").getAsString();
-        String data = json.get("data").getAsString();
+        String data = json.get("data").getAsString(); 
         try {
+            
             AnalysisHandler a = new AnalysisHandler(initiator, data);
+            
             return GSON.toJson("der er hul igennem");
          
             //Return resultObject

@@ -8,6 +8,7 @@ package FileHandler;
 import EventHandler.*;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -18,6 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.*;
 import java.util.Base64;
+import java.util.Scanner;
 
 /**
  *
@@ -70,7 +72,32 @@ public class FileHandler {
         return Integer.parseInt(line.split(",")[3]) == 1;
     }
 
+    public static void fileInputStream(EventHandler eh, String data) throws FileNotFoundException, IOException {
+        FileInputStream inputStream = null;
+        Scanner sc = null;
+        try {
+            inputStream = new FileInputStream(data);
+            sc = new Scanner(inputStream, "UTF-8");
+            while (sc.hasNextLine()) {
+                String line = sc.nextLine();
+                eh.addEvent(createInput(line));
+                // System.out.println(line);
+            }
+            // note that Scanner suppresses exceptions
+            if (sc.ioException() != null) {
+                throw sc.ioException();
+            }
+        } finally {
+            if (inputStream != null) {
+                inputStream.close();
+            }
+            if (sc != null) {
+                sc.close();
+            }
+        }
+    }
+
     public static void main(String[] args) throws IOException {
-        
+        fileInputStream(new EventHandler(), "C:\\Users\\jonab\\.ssh\\4sem\\advProgramming\\BGLogger_Classic\\WoWCombatLog.txt");
     }
 }

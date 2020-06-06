@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import Dropzone from 'react-dropzone'
 import base64 from 'react-native-base64'
 import facade from '../apiFacade'
+import Contact from './Contact'
 
 
 class DropZone extends Component {
@@ -107,6 +108,7 @@ class DropZone extends Component {
     render() {
         return (
             <div>
+            <Contact />
                 <Dropzone onDrop={file => this.validateFile(file)}>
                     {({ getRootProps, getInputProps }) => (
                         <section>
