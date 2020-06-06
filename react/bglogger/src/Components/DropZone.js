@@ -17,7 +17,6 @@ class DropZone extends Component {
             units: [],
             selectedUnit: '',
             selectedFile: '',
-            formData: null,
         }
         this.analyze = this.analyze.bind(this)
     }
@@ -26,17 +25,11 @@ class DropZone extends Component {
         const filename = file[0].path
         console.log(file[0].path)
         if (filename === 'WoWCombatLog.txt') {
-            const formData = new FormData()
             this.setState({
                 processed: false,
                 validFile: filename === 'WoWCombatLog.txt',
                 selectedFile: file[0]
             })
-            formData.append('file', this.state.selectedFile)
-            this.setState({
-                formData: formData
-            })
-            console.log(this.state.formData)
         }
         else {
             console.log('invalid file')
@@ -106,11 +99,12 @@ class DropZone extends Component {
         return Object.keys(unique);
     }
 
-    async analyze(player, data) {
-        const formData = data
+    async analyze(player, file) {
+        const formData = new FormData()
         formData.append('initiator', player)
-        //await facade.uploadLog(formData)
-        await facade.startAnalyzation(player, data)
+        formData.append('file', file)
+        await facade.uploadLog(formData)
+        //await facade.startAnalyzation(player, data)
         this.setState({
             analyzeInitiated: true
         })
@@ -147,7 +141,7 @@ class DropZone extends Component {
                                 {this.state.units}
                             </select>
                         </div>
-                        {this.state.selectedUnit.length > 0 ? (<button onClick={(evt) => this.analyze(this.state.selectedUnit, this.state.formData)}>Analyze</button>) : (<div></div>)}
+                        {this.state.selectedUnit.length > 0 ? (<button onClick={(evt) => this.analyze(this.state.selectedUnit, this.state.selectedFile)}>Analyze</button>) : (<div></div>)}
                         {this.state.analyzeInitiated ? (<Stream initiator={this.state.selectedUnit} />) : (<div></div>)}
                     </div>
                 ) : (<div></div>)}
