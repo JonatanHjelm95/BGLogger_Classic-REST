@@ -10,13 +10,18 @@ import GrafikObjects.*;
 import FileHandler.*;
 import Listeners.Listener;
 import Listeners.ListenerHolder;
+import RealTime.CettiaBootstrap;
+import io.cettia.Server;
+import static io.cettia.ServerSocketPredicates.tag;
 import java.io.IOException;
 import static java.lang.Thread.sleep;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -30,12 +35,14 @@ public class AnalysisHandler {
 
     private List<Analysis> analysis = new ArrayList<>();
     private EventHandler eh;
-
+    private String initiator;
+    
     public String getSubmittingPlayer() {
         return "";
     }
     public AnalysisHandler(String initiator, String data) throws IOException, InterruptedException{
         eh = new EventHandler();
+        this.initiator = initiator;
         analysis.add(new ActionAnalysis(initiator, this));
         analysis.add(new DamageAnalysis(initiator, this));
         analysis.add(new ChainedAnalysis(initiator, this));
@@ -81,7 +88,12 @@ public class AnalysisHandler {
     void submitResult(Result res,Class<?> sender) {
         System.out.println("Result submitted from: " +sender.getName());
         //TODO hand to frontend
-
+        Server S = CettiaBootstrap.getServer();
+        Map<String, Object> output = new LinkedHashMap<>();
+        output.put("Analysis", sender.getName());
+        output.put("ResultSet", res);
+        S.find(tag("channel:"+initiator)).send("message", res);
+        
         
         analysis.stream()
                 .filter(a -> Arrays.asList(a.getClass().getInterfaces()).contains(Plugable.class))
