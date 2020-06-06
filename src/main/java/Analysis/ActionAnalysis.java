@@ -40,7 +40,7 @@ public class ActionAnalysis extends Analysis{
     @Override
     public void Setup() {
         System.out.println("Starting analysis: " + this.getClass().getName());
-        System.out.println(Attempts.size() +" "+Succeses.size() +" "+ Fails.size());
+
         Attempts = Attempts.stream()
                 .sorted(Comparator.comparing(Event::getDate))
                 .filter(evt -> !Arrays.asList(evt.getData()).contains("Dazed"))
@@ -53,7 +53,7 @@ public class ActionAnalysis extends Analysis{
                 .sorted(Comparator.comparing(Event::getDate))
                 .collect(Collectors.toList());
         
-        System.out.println(Attempts.size() +" "+Succeses.size() +" "+ Fails.size());
+
     }
 
     @Override
@@ -67,22 +67,20 @@ public class ActionAnalysis extends Analysis{
         }
 
         Long t0 = Attempts.get(0).getDate().getTime();
-        System.out.println(Attempts.size());
         Map <Double,Long> resAPM = new HashMap<>();
         resAPM = Attempts.stream()
                 .map(s-> (s.getDate().getTime()-t0))
                 .map(ms -> TimeUnit.MILLISECONDS.toMinutes(ms))
                 .map(Double::valueOf)              
                 .collect(Collectors.groupingBy(k -> k, Collectors.counting()));
-        System.out.println(resAPM.values());
+
         Plot plotAPM = new Plot();
         plotAPM.X = resAPM.keySet().toArray(new Double[resAPM.keySet().size()]);
         
         List<Double> l = resAPM.values().stream().map(s-> (double)s).collect(Collectors.toList());
-        System.out.println(l.size() + ". OG: " +resAPM.values().size());
+
         plotAPM.Y = l.toArray(new Double[l.size()]);
-        System.out.println(l);
-        plotAPM.Name ="Startet pr Minute";
+        plotAPM.Name ="Startet Casts pr Minute";
         
         Map <Double,Long> resFPM = new HashMap<>();
         resFPM = Fails.stream()
@@ -95,7 +93,6 @@ public class ActionAnalysis extends Analysis{
         List<Double> l2 = resFPM.values().stream().map(s-> (double)s).collect(Collectors.toList());        
         plotFPM.Y = l2.toArray(new Double[l.size()]);
         plotFPM.Name = "Failed/interuptet casts pr minute";
-        System.out.println(l2);
         
         Map <Double,Long> resCPM = new HashMap<>();
         resCPM = Succeses.stream().map(s->(s.getDate().getTime()-t0) )
@@ -106,7 +103,6 @@ public class ActionAnalysis extends Analysis{
         Plot plotCPM = new Plot();
         plotCPM.X = resCPM.keySet().toArray(new Double[resFPM.keySet().size()]);
         List<Double> l3 = resCPM.values().stream().map(s-> (double)s).collect(Collectors.toList());        
-        System.out.println(l3);
         plotCPM.Y = l3.toArray(new Double[l.size()]);
         plotCPM.Name="Succesfull casts pr minute";
 

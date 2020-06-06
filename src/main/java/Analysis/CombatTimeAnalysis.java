@@ -26,7 +26,7 @@ public class CombatTimeAnalysis extends Analysis {
 
     List<Event> Actions = new ArrayList<>();
     List<Event> TargetingActions = new ArrayList<>();
-    List<Event> combined;
+    List<Event> combined = new ArrayList<>();
 
     public CombatTimeAnalysis(String _initiator, AnalysisHandler _instance) {
         super(_initiator, _instance);
@@ -34,19 +34,23 @@ public class CombatTimeAnalysis extends Analysis {
 
     @Override
     public void Setup() {
+        
         combined.addAll(Actions);
         combined.addAll(TargetingActions);
         combined = combined.stream()
-                .sorted(timestamp)
+                .sorted(Comparator.comparing(Event::getDate))
                 .collect(Collectors.toList());
+
     }
 
     @Override
     void run() {
 
         DataLine combatStart = new DataLine();
+        combatStart.data = new ArrayList<>();
         combatStart.Name = "Start of combat";
         DataLine combatEnd = new DataLine();
+        combatEnd.data = new ArrayList<>();
         combatEnd.Name = "end of combat";
         boolean inCombat = false;
         //Why not streams? Streams are not intended to compare elements to next element
@@ -61,6 +65,7 @@ public class CombatTimeAnalysis extends Analysis {
                 }
             }
         }
+        System.out.println("1");
         ResultSet.addData(combatStart);
         ResultSet.addData(combatEnd);
              

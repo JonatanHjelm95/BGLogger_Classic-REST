@@ -32,7 +32,8 @@ public class DamageAnalysis extends Analysis {
         super(_initiator, _instance);
     }
 
-    void setup() {
+    @Override
+    public void Setup() {
         Swings = Swings.stream()
                 .sorted(Comparator.comparing(Event::getDate))
                 .filter(evt -> evt.getEventType() == MyEventType.SWING_DAMAGE)
@@ -49,51 +50,53 @@ public class DamageAnalysis extends Analysis {
 
     @Override
     void run() {
-
         // Swings per minute
         Map<Double, Long> SwingsPM = new HashMap<>();
-        final Long tSwing = Swings.get(0).getDate().getTime();
-        SwingsPM = Swings.stream()
-                .map(s -> (s.getDate().getTime() - tSwing))
-                .map(Double::valueOf)
-                .collect(Collectors.groupingBy(k -> k, Collectors.counting()));
+        if (Swings.size() > 0) {
+            final Long tSwing = Swings.get(0).getDate().getTime();
+            SwingsPM = Swings.stream()
+                    .map(s -> (s.getDate().getTime() - tSwing))
+                    .map(Double::valueOf)
+                    .collect(Collectors.groupingBy(k -> k, Collectors.counting()));
 
-        Plot plotSwingsPM = new Plot();
-        plotSwingsPM.X = SwingsPM.keySet().toArray(new Double[SwingsPM.keySet().size()]);
-        List<Double> l = SwingsPM.values().stream().map(s -> (double) s).collect(Collectors.toList());
-        plotSwingsPM.Y = l.toArray(new Double[l.size()]);
+            Plot plotSwingsPM = new Plot();
+            plotSwingsPM.X = SwingsPM.keySet().toArray(new Double[SwingsPM.keySet().size()]);
+            List<Double> l = SwingsPM.values().stream().map(s -> (double) s).collect(Collectors.toList());
+            plotSwingsPM.Y = l.toArray(new Double[l.size()]);
+            ResultSet.addPlot(plotSwingsPM);
+        }
 
+        // Spells per minute    
+        if (Spells.size() > 0) {
+            Map<Double, Long> SpellsPM = new HashMap<>();
+            final Long tSpell = Spells.get(0).getDate().getTime();
+            SpellsPM = Spells.stream()
+                    .map(s -> (s.getDate().getTime() - tSpell))
+                    .map(Double::valueOf)
+                    .collect(Collectors.groupingBy(k -> k, Collectors.counting()));
 
-        // Spells per minute
-        Map<Double, Long> SpellsPM = new HashMap<>();
-        final Long tSpell = Swings.get(0).getDate().getTime();
-        SpellsPM = Spells.stream()
-                .map(s -> (s.getDate().getTime() - tSpell))
-                .map(Double::valueOf)
-                .collect(Collectors.groupingBy(k -> k, Collectors.counting()));
+            Plot plotSpellsPM = new Plot();
+            plotSpellsPM.X = SpellsPM.keySet().toArray(new Double[SpellsPM.keySet().size()]);
+            List<Double> l2 = SpellsPM.values().stream().map(s -> (double) s).collect(Collectors.toList());
+            plotSpellsPM.Y = l2.toArray(new Double[l2.size()]);
+            ResultSet.addPlot(plotSpellsPM);
+        }
+        
+                    // Ranges per minute
+        if(Ranged.size() > 0) {
+            Map<Double, Long> RangesPM = new HashMap<>();
+            final Long tRanged = Ranged.get(0).getDate().getTime();
+            RangesPM = Ranged.stream()
+                    .map(s -> (s.getDate().getTime() - tRanged))
+                    .map(Double::valueOf)
+                    .collect(Collectors.groupingBy(k -> k, Collectors.counting()));
 
-        Plot plotSpellsPM = new Plot();
-        plotSpellsPM.X = SpellsPM.keySet().toArray(new Double[SpellsPM.keySet().size()]);
-        List<Double> l2 = SpellsPM.values().stream().map(s -> (double) s).collect(Collectors.toList());
-        plotSpellsPM.Y = l2.toArray(new Double[l.size()]);
-
-
-
-        // Spells per minute
-        Map<Double, Long> RangesPM = new HashMap<>();
-        final Long tRanged = Ranged.get(0).getDate().getTime();
-        RangesPM = Ranged.stream()
-                .map(s -> (s.getDate().getTime() - tSpell))
-                .map(Double::valueOf)
-                .collect(Collectors.groupingBy(k -> k, Collectors.counting()));
-
-        Plot plotRangesPM = new Plot();
-        plotRangesPM.X = RangesPM.keySet().toArray(new Double[SpellsPM.keySet().size()]);
-        List<Double> l3 = RangesPM.values().stream().map(s -> (double) s).collect(Collectors.toList());
-        plotRangesPM.Y = l3.toArray(new Double[l.size()]);
-
-
-
+            Plot plotRangesPM = new Plot();
+            plotRangesPM.X = RangesPM.keySet().toArray(new Double[RangesPM.keySet().size()]);
+            List<Double> l3 = RangesPM.values().stream().map(s -> (double) s).collect(Collectors.toList());
+            plotRangesPM.Y = l3.toArray(new Double[l3.size()]);
+            ResultSet.addPlot(plotRangesPM);
+        }
         DataLine SumRanged = new DataLine();
         DataLine SumSpell = new DataLine();
         DataLine SumSwing = new DataLine();
@@ -113,9 +116,7 @@ public class DamageAnalysis extends Analysis {
         }
 
 
-        ResultSet.addPlot(plotSwingsPM);
-        ResultSet.addPlot(plotRangesPM);
-        ResultSet.addPlot(plotSpellsPM);
+
 
     }
 
