@@ -56,23 +56,26 @@ public class CombatTimeAnalysis extends Analysis {
         //Why not streams? Streams are not intended to compare elements to next element
         for (int i = 0; i < combined.size() - 1; i++) {
             if (!inCombat) {
-                combatStart.data.add((double) combined.get(i).getDate().getTime());
+                combatStart.data.add((double) TimeUnit.MILLISECONDS.toSeconds(combined.get(i).getDate().getTime()));
                 inCombat = !inCombat;
-            } else {
-                if (5 < TimeUnit.MILLISECONDS.toSeconds(combined.get(i).getDate().getTime() - combined.get(i + 1).getDate().getTime())) {
-                    combatEnd.data.add((double) combined.get(i).getDate().getTime());
+            } else {                
+                if (5 < TimeUnit.MILLISECONDS.toSeconds(combined.get(i).getDate().getTime() - combined.get(i-1).getDate().getTime())) {
+                    combatEnd.data.add((double) TimeUnit.MILLISECONDS.toSeconds(combined.get(i).getDate().getTime()));
                     inCombat = !inCombat;
                 }
             }
         }
-        System.out.println("1");
+        if(combatStart.data.size() != combatEnd.data.size()){
+            combatEnd.data.add((double)combined.get(combined.size()-1).getDate().getTime());
+        }
         ResultSet.addData(combatStart);
         ResultSet.addData(combatEnd);
              
         DataLine minAvgMax = new DataLine();
+        minAvgMax.data = new ArrayList<>();
         minAvgMax.Name = "Shortest combat, Average combat and Longest Combat";
         List<Double> combatLengts =IntStream.range(0, combatStart.data.size())
-                .mapToObj(i -> combatStart.data.get(i) - combatEnd.data.get(i))
+                .mapToObj(i -> combatEnd.data.get(i) - combatStart.data.get(i))
                 .collect(Collectors.toList());
         minAvgMax.data.add(combatLengts.get(combatLengts.indexOf(Collections.min(combatLengts))));
         minAvgMax.data.add(combatLengts.stream().mapToDouble(Double::doubleValue).sum()/combatLengts.size());
