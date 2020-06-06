@@ -33,7 +33,7 @@ class Contact extends React.Component {
     addMessage = ({ sender, text }) => console.log(`${sender} sends ${text}`);
 
     addRow = ({sender,text}) =>{
-        console.log("woo")
+        console.log(text)
         var obj = {
             "msg": text,
             "api": sender

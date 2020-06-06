@@ -11,6 +11,8 @@ import FileHandler.*;
 import Listeners.Listener;
 import Listeners.ListenerHolder;
 import RealTime.CettiaBootstrap;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import io.cettia.Server;
 import static io.cettia.ServerSocketPredicates.tag;
 import java.io.IOException;
@@ -88,11 +90,13 @@ public class AnalysisHandler {
     void submitResult(Result res,Class<?> sender) {
         System.out.println("Result submitted from: " +sender.getName());
         //TODO hand to frontend
+        Gson GSON = new GsonBuilder().setPrettyPrinting().create();
         Server S = CettiaBootstrap.getServer();
         Map<String, Object> output = new LinkedHashMap<>();
-        output.put("Analysis", sender.getName());
-        output.put("ResultSet", res);
-        S.find(tag("channel:"+initiator)).send("message", res);
+        output.put("sender", sender.getName());
+        output.put("text", GSON.toJson(res));
+        
+        S.find(tag("channel:log")).send("message", output);
         
         
         analysis.stream()
