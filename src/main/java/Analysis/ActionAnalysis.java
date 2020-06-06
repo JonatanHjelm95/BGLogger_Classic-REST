@@ -59,8 +59,9 @@ public class ActionAnalysis extends Analysis{
     @Override
     void run() {
         double succesFailScore = 0;
-        double succesPercent = Succeses.size() / Attempts.size();
+        double succesPercent = 0;
         try {
+            succesPercent = Succeses.size() / Attempts.size();
             succesFailScore = Succeses.size() / Fails.size();
         } catch (Exception e) {
            
@@ -125,7 +126,7 @@ public class ActionAnalysis extends Analysis{
 
     @Listener(event = MyEventType.SPELL_CAST_START)
     public void castAttempt(Event evt) {
-        if (evt.getInitiator().equals(this.initiator)) {
+        if (evt.getInitiator().contains(this.initiator)) {
             Attempts.add(evt);
         }
     }

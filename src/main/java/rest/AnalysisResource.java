@@ -53,7 +53,7 @@ public class AnalysisResource {
         String data = "C:\\Users\\Jutsu\\Downloads\\WoWCombatLog (2).txt";
 
         try {
-            AnalysisHandler ah = new AnalysisHandler("Maloni-Mograine", data);
+            AnalysisHandler ah = new AnalysisHandler("Maloni-Mograine", data,"wohoo");
         } catch (IOException ex) {
             Logger.getLogger(AnalysisResource.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InterruptedException ex) {

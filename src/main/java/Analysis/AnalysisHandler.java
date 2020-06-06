@@ -40,11 +40,12 @@ public class AnalysisHandler {
     private List<Analysis> analysis = new ArrayList<>();
     private EventHandler eh;
     private String initiator;
-    
+
     public String getSubmittingPlayer() {
         return "";
     }
-    public AnalysisHandler(String initiator, JsonArray data) throws IOException, InterruptedException{
+
+    public AnalysisHandler(String initiator, JsonArray data) throws IOException, InterruptedException {
         eh = new EventHandler();
         this.initiator = initiator;
         analysis.add(new ActionAnalysis(initiator, this));
@@ -52,14 +53,27 @@ public class AnalysisHandler {
         analysis.add(new CombatTimeAnalysis(initiator, this));
         AddListeners();
         FileHandler.readFromJson(eh, data);
-        while (!eh.eventlogComplete()) {            
+        while (!eh.eventlogComplete()) {
             sleep(100);
         }
         StartAnalysis();
         //StartAnalysis();   
     }
-    
-    private AnalysisHandler() {
+
+    public AnalysisHandler(String initiator, String data, String str) throws IOException, InterruptedException {
+        eh = new EventHandler();
+        this.initiator = initiator;
+        analysis.add(new ActionAnalysis(initiator, this));
+        analysis.add(new DamageAnalysis(initiator, this));
+        analysis.add(new CombatTimeAnalysis(initiator, this));
+        analysis.add(new CombatDpsAnalysis(initiator, this));
+        AddListeners();
+        FileHandler.fileInputStream(eh, data);
+        while (!eh.eventlogComplete()) {
+            sleep(100);
+        }
+        StartAnalysis();
+        //StartAnalysis();   
     }
 
     private void AddListeners() {
@@ -78,29 +92,28 @@ public class AnalysisHandler {
         System.out.println("Event Que Processed. Starting Analysis:");
         analysis.stream()
                 .forEach(Analysis::start);
-        
+
     }
 
     public void AddAnalysis(Analysis _analysi) {
         analysis.add(_analysi);
     }
 
-    void returnPlot(Plot p){
-        
+    void returnPlot(Plot p) {
+
     }
-    
-    void submitResult(Result res,Class<?> sender) {
-        System.out.println("Result submitted from: " +sender.getName());
+
+    void submitResult(Result res, Class<?> sender) {
+        System.out.println("Result submitted from: " + sender.getName());
         //TODO hand to frontend
+        /**
         Gson GSON = new GsonBuilder().setPrettyPrinting().create();
         Server S = CettiaBootstrap.getServer();
         Map<String, Object> output = new LinkedHashMap<>();
         output.put("sender", sender.getName());
         output.put("text", GSON.toJson(res));
-        
         S.find(tag("channel:log")).send("message", output);
-        
-        
+        * */
         analysis.stream()
                 .filter(a -> Arrays.asList(a.getClass().getInterfaces()).contains(Plugable.class))
                 .forEach(a -> {
@@ -110,7 +123,7 @@ public class AnalysisHandler {
                             .filter(m -> Arrays.asList(m.getAnnotation(Plug.class).socket()).contains(sender))
                             .forEach(m -> {
                                 try {
-                                    m.invoke(a, res,sender.getName()); //TODO fixx this plox
+                                    m.invoke(a, res, sender.getName()); //TODO fixx this plox
                                 } catch (IllegalAccessException ex) {
                                     Logger.getLogger(AnalysisHandler.class.getName()).log(Level.SEVERE, null, ex);
                                 } catch (IllegalArgumentException ex) {

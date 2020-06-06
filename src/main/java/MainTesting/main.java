@@ -52,19 +52,11 @@ public class main {
         
         //String path = "C:\\Users\\jonab\\.ssh\\4sem\\advProgramming\\BGLogger_Classic\\WowCombatLog.txt";
         //String data = "Ni8zIDE1OjQ2OjQ3LjMxOCAgQ09NQkFUX0xPR19WRVJTSU9OLDksQURWQU5DRURfTE9HX0VOQUJMRUQsMSxCVUlMRF9WRVJTSU9OLDEuMTMuNCxQUk9KRUNUX0lELDIKNi8zIDE1OjQ3OjAyLjA0MyAgU1BFTExfQVVSQV9BUFBMSUVELFBsYXllci00NDY3LTAwNTI2Q0EwLCJJbnNwaXJlLUZpcmVtYXciLDB4NTE4LDB4MCxQbGF5ZXItNDQ2Ny0wMDUyNkNBMCwiSW5zcGlyZS1GaXJlbWF3IiwweDUxOCwweDAsMTQzMjIsIkFzcGVjdCBvZiB0aGUgSGF3ayIsMHg4LEJVRkYKNi8zIDE1OjQ3OjI4LjUxNiAgU1dJTkdfREFNQUdFLFBsYXllci00NDY3LTAwNDdBMDc3LCJEcmlsbGVuaXNzZW4tRmlyZW1hdyIsMHg1MTEsMHgwLENyZWF0dXJlLTAtNDQ0OC0xLTEyOS0xMDY4NS0wMDAwRDZGN0YyLCJTd2luZSIsMHgxMGEyOCwweDAsUGxheWVyLTQ0NjctMDA0N0EwNzcsMDAwMDAwMDAwMDAwMDAwMCwxMDAsMTAwLDAsMCwwLC0xLDAsMCwwLDEyMzcuNDcsLTQ1MzAuMTEsMTQxMSwwLjUxOTIsNjMsNTUzLDI3MCw1MzksMSwwLDAsMCwxLG5pbCxuaWwKNi8zIDE1OjQ3OjI4LjkyMCAgUEFSVFlfS0lMTCxQbGF5ZXItNDQ2Ny0wMDQ3QTA3NywiRHJpbGxlbmlzc2VuLUZpcmVtYXciLDB4NTExLDB4MCxDcmVhdHVyZS0wLTQ0NDgtMS0xMjktMTA2ODUtMDAwMEQ2RjdGMiwiU3dpbmUiLDB4MTBhMjgsMHgwCjYvMyAxNTo0NzoyOC45MjAgIFNXSU5HX0RBTUFHRV9MQU5ERUQsUGxheWVyLTQ0NjctMDA0N0EwNzcsIkRyaWxsZW5pc3Nlbi1GaXJlbWF3IiwweDUxMSwweDAsQ3JlYXR1cmUtMC00NDQ4LTEtMTI5LTEwNjg1LTAwMDBENkY3RjIsIlN3aW5lIiwweDEwYTI4LDB4MCxDcmVhdHVyZS0wLTQ0NDgtMS0xMjktMTA2ODUtMDAwMEQ2RjdGMiwwMDAwMDAwMDAwMDAwMDAwLDAsMTAwLDAsMCwwLC0xLDAsMCwwLDEyMzguNDcsLTQ1MjguMDgsMTQxMSw0LjAyNDEsMyw1NTMsMjcwLDUzOSwxLDAsMCwwLDEsbmlsLG5pbAo2LzMgMTU6NDc6MjkuMzE1ICBVTklUX0RJRUQsMDAwMDAwMDAwMDAwMDAwMCxuaWwsMHg4MDAwMDAwMCwweDgwMDAwMDAwLENyZWF0dXJlLTAtNDQ0OC0xLTEyOS0xMDY4NS0wMDAwRDZGN0YyLCJTd2luZSIsMHgxMGEyOCwweDAK";
-        JsonObject o = new JsonObject();
-        o.addProperty("0", "6/3 15:47:02.043  SPELL_AURA_APPLIED,Player-4467-00526CA0,\"Inspire-Firemaw\",0x518,0x0,Player-4467-00526CA0,\"Inspire-Firemaw\",0x518,0x0,14322,\"Aspect of the Hawk\",0x8,BUFF");
+        
         try {
 
-
             //FileReaderFromBase64(new EventHandler(), data);
-            AnalysisHandler ah = new AnalysisHandler("Maloni-Mograine", path);
-            
-
-            JsonArray data = new JsonArray();
-            data.add(o);
-            //FileReaderFromBase64(new EventHandler(), data);
-            AnalysisHandler ah = new AnalysisHandler("Drillenissen-firemaw", data);
+            AnalysisHandler ah = new AnalysisHandler("Maloni-Mograine", path,"woowaa");
             /*
             eh.addListener(MyEventType.INPUT, new InputListener());
             eh.addListener(MyEventType.DUEL, new DuelListener());
