@@ -98,31 +98,27 @@ public class FileHandler {
         return Integer.parseInt(line.split(",")[3]) == 1;
     }
 
-    public static void writeFile(byte[] byteArray) {
-        try {
-            FileUtils.writeByteArrayToFile(new File("/home/tomcat/uploads/WoWCombatLog.txt"), byteArray);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        finally {
-            
-        }
-
-    }
-
     public static void fileInputStream(EventHandler eh, byte[] data) throws FileNotFoundException, IOException {
-        writeFile(data);
         FileInputStream inputStream = null;
         Scanner sc = null;
         try {
             inputStream = new FileInputStream("/home/tomcat/uploads/WoWCombatLog.txt");
             sc = new Scanner(inputStream, "UTF-8");
-            while (sc.hasNextLine()) {
-                String line = sc.nextLine();
+            
+            //Iterating first 10 lines to find beginning of combatlog
+            for (int i = 0; i < 10; i++) {
+                if (sc.nextLine().contains("COMBAT_LOG_VERSION")){
+                    i = 10;
+                }
+                else {
+                    sc.nextLine();
+                }
+            }     
+            while (sc.hasNextLine() && !sc.nextLine().contains("   ")) {
+                String line = sc.nextLine();              
                 eh.addEvent(createInput(line));
                 // System.out.println(line);
             }
-
             // note that Scanner suppresses exceptions
             if (sc.ioException() != null) {
                 throw sc.ioException();
