@@ -83,17 +83,21 @@ public class FileHandler {
                 eh.addEvent(createInput(line));
                 // System.out.println(line);
             }
+           
             // note that Scanner suppresses exceptions
             if (sc.ioException() != null) {
                 throw sc.ioException();
             }
         } finally {
+            System.out.println("File Read");
+            eh.endFile();
             if (inputStream != null) {
                 inputStream.close();
             }
             if (sc != null) {
                 sc.close();
             }
+            
         }
     }
 

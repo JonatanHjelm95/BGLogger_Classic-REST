@@ -47,9 +47,9 @@ public class AnalysisHandler {
         this.initiator = initiator;
         analysis.add(new ActionAnalysis(initiator, this));
         analysis.add(new DamageAnalysis(initiator, this));
-        analysis.add(new ChainedAnalysis(initiator, this));
+        analysis.add(new CombatTimeAnalysis(initiator, this));
         AddListeners();
-        FileHandler.FileReaderFromBase64(eh, data);
+        FileHandler.fileInputStream(eh, data);
         while (!eh.eventlogComplete()) {            
             sleep(100);
         }

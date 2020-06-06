@@ -83,11 +83,11 @@ public class CombatTimeAnalysis extends Analysis {
 
     @Listener
     public void ListenBattle(Event evt) {
-        if (evt.getInitiator().equals(initiator)) {
+        if (evt.getInitiator().contains(initiator)) {
             Actions.add(evt);
         }
         try {
-            if (evt.getData()[6].equals(initiator)) {
+            if (evt.getData()[6].contains(initiator)) {
                 TargetingActions.add(evt);
             }
         } catch (Exception e) {

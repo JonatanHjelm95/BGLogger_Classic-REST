@@ -24,12 +24,13 @@ public class Input implements Event {
     String _date;
     String _time;
     String[] _data;
-
+    String initiator;
     public Input(String _date, String _time, String _data[], MyEventType _type) {
         this._type = _type;
         this._data = _data;
         this._date = _date;
         this._time = _time;
+        this.initiator= _data[2];
     }
 
     @Override
@@ -54,13 +55,13 @@ public class Input implements Event {
 
     @Override
     public String getInitiator() {
-        return "Drillenissen";
+        return initiator;
     }
 
     @Override
     public Date getDate() {
         try {
-            return new SimpleDateFormat("dd/MM").parse(_date);
+            return new SimpleDateFormat("dd/MM hh:mm:ss.SSS").parse(_date+" "+_time);
         } catch (ParseException ex) {
             Logger.getLogger(Input.class.getName()).log(Level.SEVERE, null, ex);
         }

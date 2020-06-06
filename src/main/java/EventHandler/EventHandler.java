@@ -40,7 +40,7 @@ public class EventHandler {
                     Event _event = getEvent();
                     invokeListeners(_event);
                 }
-                eventsHandled =true;
+                eventsHandled = true;
             } catch (Exception e) {
 
             }
@@ -69,7 +69,7 @@ public class EventHandler {
 
     public void addEvent(Event _event) {
         
-        lock.tryLock();
+        lock.lock();
         try {
             System.out.println("adding event of type:"+ _event.getEventType());
             eventQue.add(_event);
@@ -79,10 +79,10 @@ public class EventHandler {
     }
 
     private Event getEvent() throws Exception {
-        while (eventQue.size() <= 0) {
-            sleep(1);
+        while (eventQue.size() == 0 && !endOfFile) {
+            sleep(100);
         }
-        lock.tryLock();
+        lock.lock();
         try {
             Event _event = eventQue.get(0);
             eventQue.remove(0);
@@ -116,7 +116,7 @@ public class EventHandler {
                     _listener.invoke(_event);
                     System.out.println("invoked a listener: " + _listener.getClass().getName());
                 }
-            };
+            };                   
             executor.submit(task0);
         }
        
