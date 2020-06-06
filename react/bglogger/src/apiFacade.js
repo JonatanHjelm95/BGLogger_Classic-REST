@@ -29,6 +29,18 @@ class ApiFacade {
         return json;
     }
 
+    uploadLog = async (data) => {
+        const res = await fetch(URL+"/api/analyze/upload", {
+            method: 'POST',
+            body: data
+        })
+        const json = await res.json();
+        if (!res.ok) {
+            throw { status: res.status, fullError: json }
+        }
+        return json;
+    }
+
     stopAnalyzation = async () => {
         const options = this.makeOptions("POST", true);
         const res = await fetch("/api/backtest/stop", options)
