@@ -1,6 +1,5 @@
-/* eslint-disable no-throw-literal */
+import axios from 'axios'
 const URL = "http://161.35.221.47/bglogger";
-
 
 
 class ApiFacade {
@@ -27,6 +26,24 @@ class ApiFacade {
             throw { status: res.status, fullError: json }
         }
         return json;
+    }
+
+    uploadLog = async (data) => {
+        axios.post(URL+"/api/analyze/upload", data, {
+
+        })
+        .then(res => {
+            console.log(res.statusText)
+        })
+        /* const res = await fetch(URL+"/api/analyze/upload", {
+            method: 'POST',
+            body: data
+        })
+        const json = await res.json();
+        if (!res.ok) {
+            throw { status: res.status, fullError: json }
+        }
+        return json; */
     }
 
     stopAnalyzation = async () => {

@@ -60,7 +60,7 @@ public class AnalysisHandler {
         //StartAnalysis();   
     }
 
-    public AnalysisHandler(String initiator, String data, String str) throws IOException, InterruptedException {
+    public AnalysisHandler(String initiator, byte[] data) throws IOException, InterruptedException {
         eh = new EventHandler();
         this.initiator = initiator;
         analysis.add(new ActionAnalysis(initiator, this));

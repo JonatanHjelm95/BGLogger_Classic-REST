@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import Dropzone from 'react-dropzone'
-import base64 from 'react-native-base64'
 import facade from '../apiFacade'
-import Contact from './Contact'
+import Stream from './Stream'
 
 
 class DropZone extends Component {
@@ -12,10 +11,12 @@ class DropZone extends Component {
             validFile: false,
             processed: false,
             loading: false,
+            analyzeInitiated: false,
             encodedData: '',
             combatLog: [],
             units: [],
             selectedUnit: '',
+            selectedFile: '',
         }
         this.analyze = this.analyze.bind(this)
     }
@@ -26,7 +27,8 @@ class DropZone extends Component {
         if (filename === 'WoWCombatLog.txt') {
             this.setState({
                 processed: false,
-                validFile: filename === 'WoWCombatLog.txt'
+                validFile: filename === 'WoWCombatLog.txt',
+                selectedFile: file[0]
             })
         }
         else {
@@ -65,7 +67,7 @@ class DropZone extends Component {
             var lineSplit = fileSplit[i].split(',')
             for (var j = 0; j < lineSplit.length; j++) {
                 if (lineSplit[j].includes('Player')) {
-                    if (lineSplit[j + 1].includes)
+                    if (lineSplit[j + 1])
                         units.push(lineSplit[j + 1])
                 }
             }
@@ -97,8 +99,16 @@ class DropZone extends Component {
         return Object.keys(unique);
     }
 
-    async analyze(player, data) {
-        var res = await facade.startAnalyzation(player, JSON.parse(JSON.stringify(data)))
+    async analyze(player, file) {
+        const formData = new FormData()
+        formData.append('initiator', player)
+        formData.append('file', file)
+        await facade.uploadLog(formData)
+        //await facade.startAnalyzation(player, data)
+        this.setState({
+            analyzeInitiated: true
+        })
+        
         //console.log(player)
         //console.log(JSON.stringify(data))
     }
@@ -106,7 +116,7 @@ class DropZone extends Component {
     changeUnit(evt) {
         evt.persist()
         this.setState({
-            selectedUnit: evt.target.value.replace('"','')
+            selectedUnit: evt.target.value.replace('"', '')
         })
     }
 
@@ -131,11 +141,12 @@ class DropZone extends Component {
                                 {this.state.units}
                             </select>
                         </div>
-                        {this.state.selectedUnit.length > 0 ? (<button onClick={(evt) => this.analyze(this.state.selectedUnit, this.state.combatLog)}>Analyze</button>) : (<div></div>)}
+                        {this.state.selectedUnit.length > 0 ? (<button onClick={(evt) => this.analyze(this.state.selectedUnit, this.state.selectedFile)}>Analyze</button>) : (<div></div>)}
+                        {this.state.analyzeInitiated ? (<Stream initiator={this.state.selectedUnit} />) : (<div></div>)}
                     </div>
                 ) : (<div></div>)}
 
-                <Contact initiator={this.state.selectedUnit} />
+
 
             </div>
 

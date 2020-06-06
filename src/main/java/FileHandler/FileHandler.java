@@ -15,6 +15,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.stream.*;
 import java.util.Base64;
 import java.util.Scanner;
+import org.apache.commons.io.FileUtils;
 
 /**
  *
@@ -96,18 +98,31 @@ public class FileHandler {
         return Integer.parseInt(line.split(",")[3]) == 1;
     }
 
-    public static void fileInputStream(EventHandler eh, String data) throws FileNotFoundException, IOException {
+    public static void writeFile(byte[] byteArray) {
+        try {
+            FileUtils.writeByteArrayToFile(new File("/home/tomcat/uploads/WoWCombatLog.txt"), byteArray);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        finally {
+            
+        }
+
+    }
+
+    public static void fileInputStream(EventHandler eh, byte[] data) throws FileNotFoundException, IOException {
+        writeFile(data);
         FileInputStream inputStream = null;
         Scanner sc = null;
         try {
-            inputStream = new FileInputStream(data);
+            inputStream = new FileInputStream("/home/tomcat/uploads/WoWCombatLog.txt");
             sc = new Scanner(inputStream, "UTF-8");
             while (sc.hasNextLine()) {
                 String line = sc.nextLine();
                 eh.addEvent(createInput(line));
                 // System.out.println(line);
             }
-           
+
             // note that Scanner suppresses exceptions
             if (sc.ioException() != null) {
                 throw sc.ioException();
@@ -121,23 +136,15 @@ public class FileHandler {
             if (sc != null) {
                 sc.close();
             }
-            
+
         }
     }
 
     public static void readFromJson(EventHandler eh, JsonArray data) {
-        for (int i = 0; i < data.size()-1; i++) {
-                eh.addEvent(createInputFromJson(GSON.fromJson(data.get(i), String.class)));
-//            try {
-//                
-//            }catch (ArrayIndexOutOfBoundsException e){
-//                
-//            }
+        for (int i = 0; i < data.size() - 1; i++) {
+            eh.addEvent(createInputFromJson(GSON.fromJson(data.get(i), String.class)));
         }
+        eh.endFile();
 
-    }
-
-    public static void main(String[] args) throws IOException {
-        fileInputStream(new EventHandler(), "C:\\Users\\jonab\\.ssh\\4sem\\advProgramming\\BGLogger_Classic\\WoWCombatLog.txt");
     }
 }

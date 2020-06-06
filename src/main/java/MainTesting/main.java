@@ -56,7 +56,7 @@ public class main {
         try {
 
             //FileReaderFromBase64(new EventHandler(), data);
-            AnalysisHandler ah = new AnalysisHandler("Maloni-Mograine", path,"woowaa");
+            //AnalysisHandler ah = new AnalysisHandler("Maloni-Mograine", path,"woowaa");
             /*
             eh.addListener(MyEventType.INPUT, new InputListener());
             eh.addListener(MyEventType.DUEL, new DuelListener());
