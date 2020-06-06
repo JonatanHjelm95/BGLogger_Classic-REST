@@ -108,7 +108,7 @@ public class AnalysisResource {
     public String submit(@FormDataParam("file") InputStream file) {
         try {
             byte[] fileByteArray = convertInputStreamToByteArrary(file);
-            AnalysisHandler ah = new AnalysisHandler("Drillenissen-Firemaw", fileByteArray);
+            AnalysisHandler ah = new AnalysisHandler("Maloni-Mograine", fileByteArray);
         } 
         catch ( IllegalStateException | IOException | InterruptedException ex) {
             return GSON.toJson(ex);
