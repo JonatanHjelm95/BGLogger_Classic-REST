@@ -6,11 +6,16 @@
 package rest;
 
 import Analysis.AnalysisHandler;
+import RealTime.CettiaBootstrap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import io.cettia.Server;
+import static io.cettia.ServerSocketPredicates.tag;
 import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.core.Context;
@@ -35,11 +40,16 @@ public class AnalysisResource {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     
     
-    @Path("test")
     @GET
-    @Produces({MediaType.APPLICATION_JSON})
-    public String test(){
-        return GSON.toJson("It works!");
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("Stream")
+    public String tests() {
+        Server S = CettiaBootstrap.getServer();
+        Map<String, Object> output = new LinkedHashMap<>();
+        output.put("sender", "Example/Stream");
+        output.put("text", "Enpoint called");
+        S.find(tag("channel:log")).send("message", output);
+        return "{\"msg\":\"Hello anonymous\"}";
     }
     
     @Path("postlog")
