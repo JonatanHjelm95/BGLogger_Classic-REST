@@ -105,10 +105,10 @@ public class AnalysisResource {
     @Path("upload")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public String submit(@FormDataParam("initiator") String initiator, @FormDataParam("file") InputStream file) {
+    public String submit(@FormDataParam("file") InputStream file) {
         try {
             byte[] fileByteArray = convertInputStreamToByteArrary(file);
-            AnalysisHandler ah = new AnalysisHandler(initiator, fileByteArray);
+            AnalysisHandler ah = new AnalysisHandler("Drillenissen-Firemaw", fileByteArray);
         } 
         catch ( IllegalStateException | IOException | InterruptedException ex) {
             return GSON.toJson(ex);
