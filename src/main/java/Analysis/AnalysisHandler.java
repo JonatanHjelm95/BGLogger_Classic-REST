@@ -61,6 +61,7 @@ public class AnalysisHandler {
     }
 
     public AnalysisHandler(String initiator, byte[] data) throws IOException, InterruptedException {
+
         eh = new EventHandler();
         this.initiator = initiator;
         analysis.add(new ActionAnalysis(initiator, this));
@@ -72,8 +73,8 @@ public class AnalysisHandler {
         while (!eh.eventlogComplete()) {
             sleep(100);
         }
+        System.out.println("");
         StartAnalysis();
-        //StartAnalysis();   
     }
 
     private void AddListeners() {
@@ -88,7 +89,7 @@ public class AnalysisHandler {
         }
     }
 
-    public void StartAnalysis() {
+    private void StartAnalysis() {
         System.out.println("Event Que Processed. Starting Analysis:");
         analysis.stream()
                 .forEach(Analysis::start);
@@ -106,14 +107,14 @@ public class AnalysisHandler {
     void submitResult(Result res, Class<?> sender) {
         System.out.println("Result submitted from: " + sender.getName());
         //TODO hand to frontend
-        
+
         Gson GSON = new GsonBuilder().setPrettyPrinting().create();
         Server S = CettiaBootstrap.getServer();
         Map<String, Object> output = new LinkedHashMap<>();
         output.put("sender", sender.getName());
         output.put("text", GSON.toJson(res));
         S.find(tag("channel:log")).send("message", output);
-        
+
         analysis.stream()
                 .filter(a -> Arrays.asList(a.getClass().getInterfaces()).contains(Plugable.class))
                 .forEach(a -> {

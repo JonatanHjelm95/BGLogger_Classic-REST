@@ -104,19 +104,14 @@ public class FileHandler {
         try {
             inputStream = new FileInputStream("/home/tomcat/uploads/WoWCombatLog.txt");
             sc = new Scanner(inputStream, "UTF-8");
-            
-            //Iterating first 10 lines to find beginning of combatlog
-            for (int i = 0; i < 10; i++) {
-                if (sc.nextLine().contains("COMBAT_LOG_VERSION")){
-                    i = 10;
-                }
-                else {
-                    sc.nextLine();
-                }
-            }     
+
             while (sc.hasNextLine() && !sc.nextLine().contains("   ")) {
-                String line = sc.nextLine();              
-                eh.addEvent(createInput(line));
+                String line = sc.nextLine();
+                if (!line.matches("^\\d\\/\\d\\d \\d\\d:\\d\\d")) {
+                    continue;
+                } else {
+                    eh.addEvent(createInput(line));
+                }
                 // System.out.println(line);
             }
             // note that Scanner suppresses exceptions

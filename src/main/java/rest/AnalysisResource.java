@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.core.Context;
@@ -95,15 +97,18 @@ public class AnalysisResource {
         JsonObject json = new JsonParser().parse(jsonString).getAsJsonObject();
         String initiator = json.get("initiator").getAsString();
         JsonArray data = json.get("data").getAsJsonArray();
-        try {
-            AnalysisHandler a = new AnalysisHandler(initiator, data);
-            return GSON.toJson("Analyzing CombatLog");
-        } catch (IOException io) {
-            GSON.toJson(io.toString());
-        } catch (InterruptedException i) {
-            GSON.toJson(i.toString());
-        }
-        return GSON.toJson(data.get(0));
+        ExecutorService executor = Executors.newFixedThreadPool(1);
+
+        Runnable r = () -> {
+            try {
+                AnalysisHandler a = new AnalysisHandler(initiator, data);
+            } catch (Exception e) {
+            }
+
+        };
+        executor.submit(r);
+        executor.shutdown();
+        return GSON.toJson("Analyzing CombatLog");
     }
 
     @POST
@@ -113,16 +118,9 @@ public class AnalysisResource {
     public String submit(InputStream file) {
         try {
             byte[] fileByteArray = convertInputStreamToByteArrary(file);
-
-            AnalysisHandler ah = new AnalysisHandler("Maloni-Mograine", fileByteArray);
-        } 
-        catch ( IllegalStateException | IOException | InterruptedException ex) {
-
             writeFile(fileByteArray);
             AnalysisHandler ah = new AnalysisHandler(getInitiator(), fileByteArray);
         } catch (IllegalStateException | IOException | InterruptedException ex) {
-
-            return GSON.toJson(ex);
         }
         return GSON.toJson("Success");
     }
@@ -151,20 +149,20 @@ public class AnalysisResource {
 
     }
 
-    public static String getInitiator() throws FileNotFoundException {
+    public String getInitiator() throws FileNotFoundException {
         FileInputStream inputStream = null;
         Scanner sc = null;
         inputStream = new FileInputStream("/home/tomcat/uploads/WoWCombatLog.txt");
         sc = new Scanner(inputStream, "UTF-8");
-        
+
         ArrayList<String> lines = new ArrayList();
         //Iterating first 10 lines to find beginning of combatlog
         for (int i = 0; i < 10; i++) {
             lines.add(sc.nextLine());
         }
         for (int i = 0; i < lines.size(); i++) {
-            if (lines.get(i).contains("Content-Disposition: form-data; name=\"initiator\"")){
-                return lines.get(i+2);
+            if (lines.get(i).contains("Content-Disposition: form-data; name=\"initiator\"")) {
+                return lines.get(i + 2);
             }
         }
         return " ";

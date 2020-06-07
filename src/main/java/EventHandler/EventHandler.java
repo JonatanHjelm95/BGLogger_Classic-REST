@@ -40,6 +40,7 @@ public class EventHandler {
                     Event _event = getEvent();
                     invokeListeners(_event);
                 }
+                System.out.println("Ending event Handler");
                 eventsHandled = true;
             } catch (Exception e) {
 

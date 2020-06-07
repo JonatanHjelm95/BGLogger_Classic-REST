@@ -1,5 +1,5 @@
 import axios from 'axios'
-const URL = "http://161.35.221.47/bglogger";
+const URL = "http://localhost:8080/jpareststarter";
 
 
 class ApiFacade {
