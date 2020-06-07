@@ -7,6 +7,7 @@ package Analysis;
 
 import EventHandler.*;
 import GrafikObjects.DataLine;
+import GrafikObjects.Plot;
 import Listeners.Listener;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -84,12 +85,12 @@ public class CombatTimeAnalysis extends Analysis {
         
         DataLine combatLen = new DataLine();
         combatLen.data = combatLengts;
-        combatLen.Name = "Combat Length in Seconds";    
+        combatLen.Name = "Combat Length in Seconds";
         ResultSet.addData(minAvgMax);
         ResultSet.addData(combatLen);
-
+   
     }
-
+    
     @Listener
     public void ListenBattle(Event evt) {
         if (evt.getInitiator().contains(initiator)) {

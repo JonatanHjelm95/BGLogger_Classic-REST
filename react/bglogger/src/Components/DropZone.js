@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import Dropzone from 'react-dropzone'
-import base64 from 'react-native-base64'
 import facade from '../apiFacade'
 import Contact from './Contact'
+import Loader from './Loader'
 
 
 class DropZone extends Component {
@@ -16,8 +16,11 @@ class DropZone extends Component {
             combatLog: [],
             units: [],
             selectedUnit: '',
+            stream: []
+
         }
         this.analyze = this.analyze.bind(this)
+        this.finishedAnalyzing = this.finishedAnalyzing.bind(this);
     }
 
     validateFile(file) {
@@ -50,7 +53,6 @@ class DropZone extends Component {
                     units: unitNames,
                     processed: true
                 })
-                console.log(this.state.combatLog)
                 this.createUnitSelectItems()
             }
             reader.readAsText(file)
@@ -98,9 +100,11 @@ class DropZone extends Component {
     }
 
     async analyze(player, data) {
-        var res = await facade.startAnalyzation(player, JSON.parse(JSON.stringify(data)))
-        //console.log(player)
-        //console.log(JSON.stringify(data))
+        this.setState({
+            loading: true,
+            stream: []
+        })
+        await facade.startAnalyzation(player, JSON.parse(JSON.stringify(data)))
     }
 
     changeUnit(evt) {
@@ -110,10 +114,16 @@ class DropZone extends Component {
         })
     }
 
+    finishedAnalyzing(){
+        this.setState({
+            loading: false
+        })
+    }
+
     render() {
         return (
             <div>
-                <Dropzone onDrop={file => this.validateFile(file)}>
+                {this.state.loading ? (<Loader />) : (<div><Dropzone onDrop={file => this.validateFile(file)}>
                     {({ getRootProps, getInputProps }) => (
                         <section>
                             <div {...getRootProps()}>
@@ -123,19 +133,20 @@ class DropZone extends Component {
                         </section>
                     )}
                 </Dropzone>
-                {this.state.processed ? (
-                    <div>
-                        <div className="unit-container">
-                            <select className="unit-select" onChange={(evt) => this.changeUnit(evt)}>
-                                <option value="" disabled selected>Select player</option>
-                                {this.state.units}
-                            </select>
+                    {this.state.processed ? (
+                        <div>
+                            <div className="unit-container">
+                                <select className="unit-select" onChange={(evt) => this.changeUnit(evt)}>
+                                    <option value="" disabled selected>Select player</option>
+                                    {this.state.units}
+                                </select>
+                            </div>
+                            {this.state.selectedUnit.length > 0 ? (<button onClick={(evt) => this.analyze(this.state.selectedUnit, this.state.combatLog)}>Analyze</button>) : (<div></div>)}
                         </div>
-                        {this.state.selectedUnit.length > 0 ? (<button onClick={(evt) => this.analyze(this.state.selectedUnit, this.state.combatLog)}>Analyze</button>) : (<div></div>)}
-                    </div>
-                ) : (<div></div>)}
+                    ) : (<div></div>)}
+                </div>)}
 
-                <Contact initiator={this.state.selectedUnit} />
+                <Contact initiator={this.state.selectedUnit} finish={this.finishedAnalyzing} stream={this.state.stream}/>
 
             </div>
 
