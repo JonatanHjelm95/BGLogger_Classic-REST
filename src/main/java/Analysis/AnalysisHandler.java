@@ -53,6 +53,7 @@ public class AnalysisHandler {
         analysis.add(new ActionAnalysis(initiator, this));
         analysis.add(new DamageAnalysis(initiator, this));
         analysis.add(new CombatTimeAnalysis(initiator, this));
+        analysis.add(new CombatDpsAnalysis(initiator, this));
         AddListeners();
         FileHandler.fileInputStream(eh, inputStream);
         while (!eh.eventlogComplete()) {
