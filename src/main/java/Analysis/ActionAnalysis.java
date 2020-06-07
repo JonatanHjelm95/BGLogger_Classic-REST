@@ -63,7 +63,7 @@ public class ActionAnalysis extends Analysis{
         double succesPercent = 0;
         try {
             succesPercent = Succeses.size() / Attempts.size();
-            succesFailScore = Succeses.size() / Fails.size();
+            succesFailScore = (Succeses.size()+Attempts.size()) / Fails.size();
         } catch (Exception e) {
            
         }

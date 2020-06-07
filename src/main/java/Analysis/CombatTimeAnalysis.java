@@ -60,14 +60,14 @@ public class CombatTimeAnalysis extends Analysis {
                 combatStart.data.add((double) TimeUnit.MILLISECONDS.toSeconds(combined.get(i).getDate().getTime()-t0));
                 inCombat = !inCombat;
             } else {                
-                if (5 < TimeUnit.MILLISECONDS.toSeconds(combined.get(i).getDate().getTime() - combined.get(i-1).getDate().getTime())) {
+                if (5 < TimeUnit.MILLISECONDS.toSeconds(combined.get(i+1).getDate().getTime() - combined.get(i).getDate().getTime())) {
                     combatEnd.data.add((double) TimeUnit.MILLISECONDS.toSeconds(combined.get(i).getDate().getTime()-t0));
                     inCombat = !inCombat;
                 }
             }
         }
         if(combatStart.data.size() != combatEnd.data.size()){
-            combatEnd.data.add((double)combined.get(combined.size()-1).getDate().getTime());
+            combatEnd.data.add((double)TimeUnit.MILLISECONDS.toSeconds(combined.get(combined.size()-1).getDate().getTime()-t0));
         }
         ResultSet.addData(combatStart);
         ResultSet.addData(combatEnd);
