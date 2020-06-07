@@ -29,6 +29,7 @@ public class DamageAnalysis extends Analysis {
     List<Event> Spells = new ArrayList<>();
     List<Event> Swings = new ArrayList<>();
     List<Event> Ranged = new ArrayList<>();
+    List<Event> combined = new ArrayList<>();
 
     public DamageAnalysis(String _initiator, AnalysisHandler _instance) {
         super(_initiator, _instance);
@@ -48,16 +49,29 @@ public class DamageAnalysis extends Analysis {
                 .sorted(Comparator.comparing(Event::getDate))
                 .filter(evt -> evt.getEventType() == MyEventType.RANGE_DAMAGE)
                 .collect(Collectors.toList());
+
+        if (Swings.size() > 0) {
+            combined.addAll(Swings);
+        }
+        if (Spells.size() > 0) {
+            combined.addAll(Spells);
+        }
+        if (Ranged.size() > 0) {
+            combined.addAll(Ranged);
+        }
+        combined = combined.stream()
+                .sorted(Comparator.comparing(Event::getDate))
+                .collect(Collectors.toList());
     }
 
     @Override
     void run() {
         // Swings per minute
         Map<Double, Long> SwingsPM = new HashMap<>();
+        long t0 = combined.get(0).getDate().getTime();
         if (Swings.size() > 0) {
-            final Long tSwing = Swings.get(0).getDate().getTime();
             SwingsPM = Swings.stream()
-                    .map(s -> (s.getDate().getTime() - tSwing))
+                    .map(s -> (s.getDate().getTime() - t0))
                     .map(ms -> TimeUnit.MILLISECONDS.toMinutes(ms))
                     .map(Double::valueOf)
                     .collect(Collectors.groupingBy(k -> k, Collectors.counting()));
@@ -73,9 +87,8 @@ public class DamageAnalysis extends Analysis {
         // Spells per minute    
         if (Spells.size() > 0) {
             Map<Double, Long> SpellsPM = new HashMap<>();
-            final Long tSpell = Spells.get(0).getDate().getTime();
             SpellsPM = Spells.stream()
-                    .map(s -> (s.getDate().getTime() - tSpell))
+                    .map(s -> (s.getDate().getTime() - t0))
                     .map(ms -> TimeUnit.MILLISECONDS.toMinutes(ms))
                     .map(Double::valueOf)
                     .collect(Collectors.groupingBy(k -> k, Collectors.counting()));
@@ -91,9 +104,8 @@ public class DamageAnalysis extends Analysis {
         // Ranges per minute
         if (Ranged.size() > 0) {
             Map<Double, Long> RangesPM = new HashMap<>();
-            final Long tRanged = Ranged.get(0).getDate().getTime();
             RangesPM = Ranged.stream()
-                    .map(s -> (s.getDate().getTime() - tRanged))
+                    .map(s -> (s.getDate().getTime() - t0))
                     .map(ms -> TimeUnit.MILLISECONDS.toMinutes(ms))
                     .map(Double::valueOf)
                     .collect(Collectors.groupingBy(k -> k, Collectors.counting()));
@@ -128,23 +140,13 @@ public class DamageAnalysis extends Analysis {
 
     @Override
     public void shutdown() {
-        List<Event> combined = new ArrayList<>();
+
         Plot dpsTotal = new Plot();
-        if (Swings.size() > 0) {
-            combined.addAll(Swings);
-        }
-        if (Spells.size() > 0) {
-            combined.addAll(Spells);
-        }
-        if (Ranged.size() > 0) {
-            combined.addAll(Ranged);
-        }
+
         dpsTotal.X = new Double[combined.size()];
         dpsTotal.Y = new Double[combined.size()];
         dpsTotal.Name = "All Dmg with timestamp in seconds";
-        combined = combined.stream()
-                .sorted(Comparator.comparing(Event::getDate))
-                .collect(Collectors.toList());
+        
         for (int i = 0; i < combined.size(); i++) {
             dpsTotal.X[i] = (double) TimeUnit.MILLISECONDS.toSeconds(combined.get(i).getDate().getTime() - combined.get(0).getDate().getTime());
             String arr[] = combined.get(i).getData();
@@ -159,7 +161,9 @@ public class DamageAnalysis extends Analysis {
                     continue;
                 }
             }
-            if(dpsTotal.Y[i] == null) dpsTotal.Y[i] = 0.0;
+            if (dpsTotal.Y[i] == null) {
+                dpsTotal.Y[i] = 0.0;
+            }
         }
         ResultSet.addPlot(dpsTotal);
     }
@@ -170,13 +174,13 @@ public class DamageAnalysis extends Analysis {
             Spells.add(evt);
         }
     }
+
     @Listener(event = MyEventType.SPELL_PERIODIC_DAMAGE)
     public void SpellPeriodicDamage(Event evt) {
         if (evt.getInitiator().contains(this.initiator)) {
             Spells.add(evt);
         }
     }
-    
 
     @Listener(event = MyEventType.SWING_DAMAGE)
     public void SwingDamage(Event evt) {
