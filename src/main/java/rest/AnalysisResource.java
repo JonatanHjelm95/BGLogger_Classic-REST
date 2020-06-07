@@ -50,7 +50,7 @@ public class AnalysisResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("test")
     public String testAnalyzizzz(){
-        String data = "C:\\Users\\Jutsu\\Downloads\\WoWCombatLog (2).txt";
+        String data = "C:\\Users\\Jutsu\\Downloads\\WoWCombatLog.txt";
 
         try {
             AnalysisHandler ah = new AnalysisHandler("Maloni-Mograine", data,"wohoo");
