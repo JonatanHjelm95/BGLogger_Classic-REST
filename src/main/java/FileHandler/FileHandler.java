@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.stream.*;
 import java.util.Base64;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -35,25 +37,14 @@ public class FileHandler {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    public static void FileReader(EventHandler eh, String path) throws FileNotFoundException, IOException {
-        List<Input> list = new ArrayList();
-        try {
-            try (BufferedReader reader = Files.newBufferedReader(Paths.get(path))) {
-                list = reader.lines().map(line -> createInput(line)).collect(Collectors.toList());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        for (Input i : list) {
-            eh.addEvent(i);
-        }
 
-    }
-
-    private static Input createInput(String line) {
+    private static Input createInput(String line) throws Exception {
+        if(!line.matches("^.*\\d+\\/\\d+.*")){
+            throw new Exception();
+        }
         //Splitting on whitespaces IOT get date and time
         String[] dates = line.split(" ");
-        String date = dates[0];
+        String date = dates[0].contains(",")?dates[0].substring(1):dates[0];
         String time = dates[1];
         String eventString = dates[3];
         String[] eventSplit = eventString.split(",");
@@ -96,11 +87,13 @@ public class FileHandler {
                 String line = sc.nextLine();
                 eh.addEvent(createInput(line));
                 // System.out.println(line);
-            }           
+            }
             // note that Scanner suppresses exceptions
             if (sc.ioException() != null) {
                 throw sc.ioException();
             }
+        } catch (Exception ex) {
+            Logger.getLogger(FileHandler.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             System.out.println("File Read");
             eh.endFile();
@@ -109,7 +102,7 @@ public class FileHandler {
             }
             if (sc != null) {
                 sc.close();
-            }            
+            }
         }
     }
 
@@ -119,29 +112,37 @@ public class FileHandler {
             sc = new Scanner(inputStream, "UTF-8");
             while (sc.hasNextLine()) {
                 String line = sc.nextLine();
-                eh.addEvent(createInput(line));
+                    try {
+                        Input i = createInput(line);
+                        eh.addEvent(i);
+                    } catch (Exception e) {
+                        continue;
+                    }
+                }
+                
+
                 // System.out.println(line);
-            }           
+            
             // note that Scanner suppresses exceptions
             if (sc.ioException() != null) {
                 throw sc.ioException();
             }
+        } catch (Exception e) {
+            System.out.println("i went ree");
+            System.out.println(e.getMessage());
         } finally {
             System.out.println("File Read");
             eh.endFile();
-            if (inputStream != null) {
-                inputStream.close();
-            }
             if (sc != null) {
                 sc.close();
             }
-            
+
         }
     }
-    
+
     public static void readFromJson(EventHandler eh, JsonArray data) {
-        for (int i = 0; i < data.size()-1; i++) {
-                eh.addEvent(createInputFromJson(GSON.fromJson(data.get(i), String.class)));
+        for (int i = 0; i < data.size() - 1; i++) {
+            eh.addEvent(createInputFromJson(GSON.fromJson(data.get(i), String.class)));
 //            try {
 //                
 //            }catch (ArrayIndexOutOfBoundsException e){

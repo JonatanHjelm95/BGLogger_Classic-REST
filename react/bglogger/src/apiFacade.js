@@ -19,8 +19,10 @@ class ApiFacade {
     }
 
     startAnalyzation = async (playername, data) => {
-        const options = this.makeOptions("POST",  {data: data});
-        const res = await fetch("api/analyze/upload/hello", options)
+        var formData = new FormData()
+        formData.append("data",data)
+        const options = this.makeOptions("POST",  formData);
+        const res = await fetch("api/analyze/upload/"+playername, options)
         const json = await res.json();
         if (!res.ok) {
             throw { status: res.status, fullError: json }

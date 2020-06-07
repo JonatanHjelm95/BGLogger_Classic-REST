@@ -33,7 +33,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
+
 /**
  * REST Web Service
  *
@@ -51,7 +51,7 @@ public class AnalysisResource {
     public String Test() {
         return "helloSenior";
     }
-
+    /*
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("test")
@@ -67,7 +67,8 @@ public class AnalysisResource {
         }
         return "helloSenior";
     }
-
+    */
+    
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("Stream")
@@ -82,32 +83,7 @@ public class AnalysisResource {
         return "{\"msg\":\"Hello anonymous\"}";
     }
 
-    @Path("postlog")
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces({MediaType.APPLICATION_JSON})
-    public String analyze(String jsonString) {
-        JsonObject json = new JsonParser().parse(jsonString).getAsJsonObject();
-        String initiator = json.get("initiator").getAsString();
-        JsonArray data = json.get("data").getAsJsonArray();
-//        String line = GSON.fromJson(data.get(0), String.class).replace("\\", "");
-//
-//        //Splitting on whitespaces IOT get date and time
-//        String[] lineSplit = line.split("  ");
-//        String[] dates = lineSplit[0].split(" ");
-//        String date = dates[0];
-//        String time = dates[1];
-//        return GSON.toJson(time);
-//        String line = GSON.fromJson(data.get(1), String.class);
-//        String[] dates = line.split(" ");
-//        String eventString = line.split("  ")[1];
-//
-//        return GSON.toJson(eventString);
 
-        //AnalysisHandler a = new AnalysisHandler(initiator, data);
-        return GSON.toJson("Analyzing CombatLog");
-
-    }
 
     @Path("upload/{initiator}")
     @POST
@@ -115,46 +91,21 @@ public class AnalysisResource {
     @Produces({MediaType.APPLICATION_JSON})
     public String ree(
             @PathParam("initiator") String initiatoir,
-            MultipartFormDataInput input
+            @FormDataParam("file") InputStream uploadedInputStream
     ) {
         System.out.println("omg a post!");
         System.out.println(initiatoir);
-        Scanner sc = null;
+ 
         try {
-            sc = new Scanner(uploadedInputStream, "UTF-8");
-            while (sc.hasNextLine()) {
-                String line = sc.nextLine();
-                System.out.println(line);
-                // System.out.println(line);
-            }
-            // note that Scanner suppresses exceptions
-            if (sc.ioException() != null) {
-                throw sc.ioException();
-            }
-
-        } catch (Exception e) {
-        } finally {
-            System.out.println("File Read");
-            if (uploadedInputStream != null) {
-                uploadedInputStream.close();
-            }
-            if (sc != null) {
-                sc.close();
-            }
-
-        }
-        /*  if (uploadedInputStream == null || fileDetail == null) {
-            return Response.status(400).entity("Invalid form data").build();
-        }
-        try {
-            AnalysisHandler ah = new AnalysisHandler("Maloni-Mograine", uploadedInputStream);
+            AnalysisHandler ah = new AnalysisHandler(initiatoir, uploadedInputStream);
         } catch (IOException ex) {
             Logger.getLogger(AnalysisResource.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InterruptedException ex) {
             Logger.getLogger(AnalysisResource.class.getName()).log(Level.SEVERE, null, ex);
         }
-         */
-        return "ree";
+
+       
+        return "it woorks! THATS SO WIZARD ANNIE!";
     }
 
 }

@@ -24,8 +24,6 @@ import java.util.logging.Logger;
  */
 public class EventHandler {
 
-    private static EventHandler Instance = null;
-
     public boolean Finished = false;
 
     private Map< MyEventType, List<ListenerHolder>> Listeners = new HashMap<>();
@@ -34,16 +32,20 @@ public class EventHandler {
     public EventHandler() {
         
         ExecutorService executor = Executors.newFixedThreadPool(1);
-        Runnable runnableTask = () -> {
-            try {
+        Runnable runnableTask = () -> {            
                 while (!endOfFile || eventQue.size()>0) {
-                    Event _event = getEvent();
-                    invokeListeners(_event);
+                    Event _event;
+                    try {
+                        _event = getEvent();
+                        invokeListeners(_event);
+                    } catch (Exception ex) {
+                        Logger.getLogger(EventHandler.class.getName()).log(Level.SEVERE, null, ex);
+                        continue;
+                    }
+                    
                 }
                 eventsHandled = true;
-            } catch (Exception e) {
 
-            }
         };
         executor.submit(runnableTask);
         executor.shutdown();
