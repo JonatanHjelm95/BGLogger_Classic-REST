@@ -6,8 +6,11 @@
 package Analysis;
 
 import static java.lang.Thread.sleep;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  *
@@ -36,7 +39,14 @@ public class CombatDpsAnalysis extends Analysis implements Plugable {
 
     @Override
     void run() {
-
+            //List<Double> dpsPrCombat = IntStream.range(0, CombatTime.getData().get(0).data.size())
+                   // .mapToObj(i->{
+                   //     double sum = 0;
+                        
+                    //    return 0.0;
+                   // })
+                   // .collect(Collectors.toList());
+                    
     }
 
     @Plug(socket = {DamageAnalysis.class, CombatTimeAnalysis.class})

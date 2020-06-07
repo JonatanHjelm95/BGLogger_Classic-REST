@@ -116,7 +116,6 @@ public class EventHandler {
                 //List<ListenerHolder> _listeners = Listeners.get(MyEventType.ANY);
                 for (ListenerHolder _listener : Listeners.get(MyEventType.ANY)) {
                     _listener.invoke(_event);
-                    System.out.println("invoked a listener: " + _listener.getClass().getName());
                 }
             };                   
             executor.submit(task0);
@@ -127,7 +126,6 @@ public class EventHandler {
                 //List<ListenerHolder> _listeners = Listeners.get(_event.getEventType());
                 for (ListenerHolder _listener : Listeners.get(_event.getEventType())) {
                     _listener.invoke(_event);
-                    System.out.println("invoked a listener: " + _listener.getClass().getName());
                 }
             };
             executor.submit(task1);

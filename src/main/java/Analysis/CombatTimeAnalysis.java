@@ -52,15 +52,16 @@ public class CombatTimeAnalysis extends Analysis {
         DataLine combatEnd = new DataLine();
         combatEnd.data = new ArrayList<>();
         combatEnd.Name = "end of combat";
+        Long t0 = combined.get(0).getDate().getTime();
         boolean inCombat = false;
         //Why not streams? Streams are not intended to compare elements to next element
         for (int i = 0; i < combined.size() - 1; i++) {
             if (!inCombat) {
-                combatStart.data.add((double) TimeUnit.MILLISECONDS.toSeconds(combined.get(i).getDate().getTime()));
+                combatStart.data.add((double) TimeUnit.MILLISECONDS.toSeconds(combined.get(i).getDate().getTime()-t0));
                 inCombat = !inCombat;
             } else {                
                 if (5 < TimeUnit.MILLISECONDS.toSeconds(combined.get(i).getDate().getTime() - combined.get(i-1).getDate().getTime())) {
-                    combatEnd.data.add((double) TimeUnit.MILLISECONDS.toSeconds(combined.get(i).getDate().getTime()));
+                    combatEnd.data.add((double) TimeUnit.MILLISECONDS.toSeconds(combined.get(i).getDate().getTime()-t0));
                     inCombat = !inCombat;
                 }
             }
