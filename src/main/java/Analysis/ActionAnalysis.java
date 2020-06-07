@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -74,7 +75,7 @@ public class ActionAnalysis extends Analysis{
                 .map(ms -> TimeUnit.MILLISECONDS.toMinutes(ms))
                 .map(Double::valueOf)              
                 .collect(Collectors.groupingBy(k -> k, Collectors.counting()));
-
+        resAPM = new TreeMap <Double, Long>(resAPM);
         Plot plotAPM = new Plot();
         plotAPM.X = resAPM.keySet().toArray(new Double[resAPM.keySet().size()]);
         
@@ -88,7 +89,8 @@ public class ActionAnalysis extends Analysis{
                 .map(s->(s.getDate().getTime()-t0) )
                 .map(ms -> TimeUnit.MILLISECONDS.toMinutes(ms))
                 .map(Double::valueOf)              
-                .collect(Collectors.groupingBy(k -> k, Collectors.counting()));               
+                .collect(Collectors.groupingBy(k -> k, Collectors.counting()));     
+        resFPM = new TreeMap <Double, Long>(resFPM);
         Plot plotFPM = new Plot();
         plotFPM.X = resFPM.keySet().toArray(new Double[resFPM.keySet().size()]);
         List<Double> l2 = resFPM.values().stream().map(s-> (double)s).collect(Collectors.toList());        
@@ -100,7 +102,7 @@ public class ActionAnalysis extends Analysis{
                 .map(ms -> TimeUnit.MILLISECONDS.toMinutes(ms))
                 .map(Double::valueOf)              
                 .collect(Collectors.groupingBy(k -> k, Collectors.counting())); 
-
+        resCPM = new TreeMap <Double, Long>(resCPM);
         Plot plotCPM = new Plot();
         plotCPM.X = resCPM.keySet().toArray(new Double[resFPM.keySet().size()]);
         List<Double> l3 = resCPM.values().stream().map(s-> (double)s).collect(Collectors.toList());        
