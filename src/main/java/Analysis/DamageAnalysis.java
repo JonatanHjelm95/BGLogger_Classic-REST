@@ -170,6 +170,13 @@ public class DamageAnalysis extends Analysis {
             Spells.add(evt);
         }
     }
+    @Listener(event = MyEventType.SPELL_PERIODIC_DAMAGE)
+    public void SpellPeriodicDamage(Event evt) {
+        if (evt.getInitiator().contains(this.initiator)) {
+            Spells.add(evt);
+        }
+    }
+    
 
     @Listener(event = MyEventType.SWING_DAMAGE)
     public void SwingDamage(Event evt) {
