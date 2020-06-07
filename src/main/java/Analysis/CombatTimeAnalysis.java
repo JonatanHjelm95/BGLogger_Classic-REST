@@ -12,7 +12,9 @@ import Listeners.Listener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -35,7 +37,7 @@ public class CombatTimeAnalysis extends Analysis {
 
     @Override
     public void Setup() {
-        
+
         combined.addAll(Actions);
         combined.addAll(TargetingActions);
         combined = combined.stream()
@@ -58,39 +60,63 @@ public class CombatTimeAnalysis extends Analysis {
         //Why not streams? Streams are not intended to compare elements to next element
         for (int i = 0; i < combined.size() - 1; i++) {
             if (!inCombat) {
-                combatStart.data.add((double) TimeUnit.MILLISECONDS.toSeconds(combined.get(i).getDate().getTime()-t0));
+                combatStart.data.add((double) TimeUnit.MILLISECONDS.toSeconds(combined.get(i).getDate().getTime() - t0));
                 inCombat = !inCombat;
-            } else {                
-                if (5 < TimeUnit.MILLISECONDS.toSeconds(combined.get(i+1).getDate().getTime() - combined.get(i).getDate().getTime())) {
-                    combatEnd.data.add((double) TimeUnit.MILLISECONDS.toSeconds(combined.get(i).getDate().getTime()-t0));
+            } else {
+                if (5 < TimeUnit.MILLISECONDS.toSeconds(combined.get(i + 1).getDate().getTime() - combined.get(i).getDate().getTime())) {
+                    combatEnd.data.add((double) TimeUnit.MILLISECONDS.toSeconds(combined.get(i).getDate().getTime() - t0));
                     inCombat = !inCombat;
                 }
             }
         }
-        if(combatStart.data.size() != combatEnd.data.size()){
-            combatEnd.data.add((double)TimeUnit.MILLISECONDS.toSeconds(combined.get(combined.size()-1).getDate().getTime()-t0));
+        if (combatStart.data.size() != combatEnd.data.size()) {
+            combatEnd.data.add((double) TimeUnit.MILLISECONDS.toSeconds(combined.get(combined.size() - 1).getDate().getTime() - t0));
         }
         ResultSet.addData(combatStart);
         ResultSet.addData(combatEnd);
-             
+
         DataLine minAvgMax = new DataLine();
         minAvgMax.data = new ArrayList<>();
         minAvgMax.Name = "Shortest combat, Average combat and Longest Combat";
-        List<Double> combatLengts =IntStream.range(0, combatStart.data.size())
+        List<Double> combatLengts = IntStream.range(0, combatStart.data.size())
                 .mapToObj(i -> combatEnd.data.get(i) - combatStart.data.get(i))
                 .collect(Collectors.toList());
         minAvgMax.data.add(combatLengts.get(combatLengts.indexOf(Collections.min(combatLengts))));
-        minAvgMax.data.add(combatLengts.stream().mapToDouble(Double::doubleValue).sum()/combatLengts.size());
+        minAvgMax.data.add(combatLengts.stream().mapToDouble(Double::doubleValue).sum() / combatLengts.size());
         minAvgMax.data.add(combatLengts.get(combatLengts.indexOf(Collections.max(combatLengts))));
-        
+
         DataLine combatLen = new DataLine();
         combatLen.data = combatLengts;
         combatLen.Name = "Combat Length in Seconds";
         ResultSet.addData(minAvgMax);
         ResultSet.addData(combatLen);
-   
+    //    ResultSet.addPlot(createCombatTimeline(combatEnd, combatStart));
+
     }
-    
+
+    public Plot createCombatTimeline(DataLine combatEnd, DataLine combatStart) {
+        Plot timeline = new Plot();
+        timeline.Name = "CombatTimeline";
+        double end = combatEnd.data.get(combatEnd.data.size() - 1);
+        boolean inCombat = false;
+        Map<Integer, Double> timelineMap = new HashMap<>();
+        for (int i = 0; i < end; i++) {
+            for (int j = 0; j < combatEnd.data.size(); j++) {
+                inCombat = i >= combatStart.data.get(j) && i < combatEnd.data.get(j);
+            }
+            if(inCombat){
+                timelineMap.put(i, 1.0);
+            }
+            else{
+                timelineMap.put(i, 0.0);
+            }
+        }
+        timeline.X = timelineMap.keySet().toArray(new Double[timelineMap.keySet().size()]);
+        timeline.Y = timelineMap.values().toArray(new Double[timelineMap.values().size()]);
+        return timeline;
+
+    }
+
     @Listener
     public void ListenBattle(Event evt) {
         if (evt.getInitiator().contains(initiator)) {

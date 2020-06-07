@@ -147,16 +147,16 @@ class Contact extends React.Component {
                     </thead>
                     <tbody>
                         {this.state.stream.map(item => {
-                           /*  if (item.sender !== undefined && item.sender.toString().includes("Analysis.CombatTimeAnalysis")) {
-                                console.log(item.text.data)
-                                return (
+                           if (item.sender !== undefined && item.sender.toString().includes("Analysis.CombatTimeAnalysis")) {
+                                console.log(item.text)
+                                /* return (
                                     <div>
                                         <tr><th>Combat Time Analysis</th></tr>
                                         <tr><td>{this.createTimeline(item.text.data)}</td></tr>
                                     </div>
                                     //<tr><td>{item.data[0].Name}</td></tr>
-                                )
-                            } */
+                                ) */
+                            }
                         })}
                         {this.state.stream.map(item => {
                             if (item.sender !== undefined && item.sender.toString().includes("Analysis.ActionAnalysis")) {

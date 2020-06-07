@@ -80,7 +80,7 @@ public class DamageAnalysis extends Analysis {
             plotSwingsPM.X = SwingsPM.keySet().toArray(new Double[SwingsPM.keySet().size()]);
             List<Double> l = SwingsPM.values().stream().map(s -> (double) s).collect(Collectors.toList());
             plotSwingsPM.Y = l.toArray(new Double[l.size()]);
-            plotSwingsPM.Name = "Mele Swings pr minute";
+            plotSwingsPM.Name = "Melee Swings/minute";
             ResultSet.addPlot(plotSwingsPM);
         }
 
