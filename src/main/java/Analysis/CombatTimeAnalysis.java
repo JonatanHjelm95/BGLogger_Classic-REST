@@ -84,7 +84,7 @@ public class CombatTimeAnalysis extends Analysis {
         
         DataLine combatLen = new DataLine();
         combatLen.data = combatLengts;
-                
+        combatLen.Name = "Combat Length in Seconds";    
         ResultSet.addData(minAvgMax);
         ResultSet.addData(combatLen);
 

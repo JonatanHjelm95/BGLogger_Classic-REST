@@ -16,6 +16,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.*;
 
 /**
@@ -56,13 +58,15 @@ public class DamageAnalysis extends Analysis {
             final Long tSwing = Swings.get(0).getDate().getTime();
             SwingsPM = Swings.stream()
                     .map(s -> (s.getDate().getTime() - tSwing))
+                    .map(ms -> TimeUnit.MILLISECONDS.toMinutes(ms))
                     .map(Double::valueOf)
                     .collect(Collectors.groupingBy(k -> k, Collectors.counting()));
-
+            SwingsPM = new TreeMap<Double, Long>(SwingsPM);
             Plot plotSwingsPM = new Plot();
             plotSwingsPM.X = SwingsPM.keySet().toArray(new Double[SwingsPM.keySet().size()]);
             List<Double> l = SwingsPM.values().stream().map(s -> (double) s).collect(Collectors.toList());
             plotSwingsPM.Y = l.toArray(new Double[l.size()]);
+            plotSwingsPM.Name = "Mele Swings pr minute";
             ResultSet.addPlot(plotSwingsPM);
         }
 
@@ -72,34 +76,39 @@ public class DamageAnalysis extends Analysis {
             final Long tSpell = Spells.get(0).getDate().getTime();
             SpellsPM = Spells.stream()
                     .map(s -> (s.getDate().getTime() - tSpell))
+                    .map(ms -> TimeUnit.MILLISECONDS.toMinutes(ms))
                     .map(Double::valueOf)
                     .collect(Collectors.groupingBy(k -> k, Collectors.counting()));
-
+            SpellsPM = new TreeMap<Double, Long>(SpellsPM);
             Plot plotSpellsPM = new Plot();
             plotSpellsPM.X = SpellsPM.keySet().toArray(new Double[SpellsPM.keySet().size()]);
             List<Double> l2 = SpellsPM.values().stream().map(s -> (double) s).collect(Collectors.toList());
             plotSpellsPM.Y = l2.toArray(new Double[l2.size()]);
+            plotSpellsPM.Name = "Damaging Spells pr minute";
             ResultSet.addPlot(plotSpellsPM);
         }
-        
-                    // Ranges per minute
-        if(Ranged.size() > 0) {
+
+        // Ranges per minute
+        if (Ranged.size() > 0) {
             Map<Double, Long> RangesPM = new HashMap<>();
             final Long tRanged = Ranged.get(0).getDate().getTime();
             RangesPM = Ranged.stream()
                     .map(s -> (s.getDate().getTime() - tRanged))
+                    .map(ms -> TimeUnit.MILLISECONDS.toMinutes(ms))
                     .map(Double::valueOf)
                     .collect(Collectors.groupingBy(k -> k, Collectors.counting()));
-
+            RangesPM = new TreeMap<Double, Long>(RangesPM);
             Plot plotRangesPM = new Plot();
             plotRangesPM.X = RangesPM.keySet().toArray(new Double[RangesPM.keySet().size()]);
             List<Double> l3 = RangesPM.values().stream().map(s -> (double) s).collect(Collectors.toList());
             plotRangesPM.Y = l3.toArray(new Double[l3.size()]);
+            plotRangesPM.Name = "Ranged Attacks minute";
             ResultSet.addPlot(plotRangesPM);
         }
         DataLine SumRanged = new DataLine();
         DataLine SumSpell = new DataLine();
         DataLine SumSwing = new DataLine();
+
         try {
             SumRanged.Name = "Sum of ranged dmg";
             SumRanged.datapoint = Swings.stream().mapToDouble(s -> Double.parseDouble(s.getData()[25])).sum();
@@ -115,9 +124,44 @@ public class DamageAnalysis extends Analysis {
             System.out.println(e.getMessage());
         }
 
+    }
 
-
-
+    @Override
+    public void shutdown() {
+        List<Event> combined = new ArrayList<>();
+        Plot dpsTotal = new Plot();
+        if (Swings.size() > 0) {
+            combined.addAll(Swings);
+        }
+        if (Spells.size() > 0) {
+            combined.addAll(Spells);
+        }
+        if (Ranged.size() > 0) {
+            combined.addAll(Ranged);
+        }
+        dpsTotal.X = new Double[combined.size()];
+        dpsTotal.Y = new Double[combined.size()];
+        dpsTotal.Name = "All Dmg with timestamp in seconds";
+        combined = combined.stream()
+                .sorted(Comparator.comparing(Event::getDate))
+                .collect(Collectors.toList());
+        for (int i = 0; i < combined.size(); i++) {
+            dpsTotal.X[i] = (double) TimeUnit.MILLISECONDS.toSeconds(combined.get(i).getDate().getTime() - combined.get(0).getDate().getTime());
+            String arr[] = combined.get(i).getData();
+            for (int j = arr.length - 1; j > 0; j--) {
+                try {
+                    Double val = Double.parseDouble(arr[j]);
+                    if (val > 10 && val < 5000) {
+                        dpsTotal.Y[i] = val;
+                        break;
+                    }
+                } catch (Exception e) {
+                    continue;
+                }
+            }
+            if(dpsTotal.Y[i] == null) dpsTotal.Y[i] = 0.0;
+        }
+        ResultSet.addPlot(dpsTotal);
     }
 
     @Listener(event = MyEventType.SPELL_DAMAGE)

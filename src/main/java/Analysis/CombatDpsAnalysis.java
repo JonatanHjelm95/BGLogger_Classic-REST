@@ -57,7 +57,7 @@ public class CombatDpsAnalysis extends Analysis implements Plugable {
         } else {
             Damage = data;
         }
-        waitingForData = (Damage != null && CombatTime != null);
+        waitingForData = !(Damage != null && CombatTime != null);
     }
 
 }
