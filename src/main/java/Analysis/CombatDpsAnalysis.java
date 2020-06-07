@@ -13,18 +13,19 @@ import java.util.logging.Logger;
  *
  * @author Martin
  */
-public class CombatDpsAnalysis extends Analysis implements Plugable{
+public class CombatDpsAnalysis extends Analysis implements Plugable {
+
     private boolean waitingForData = true;
     Result Damage;
     Result CombatTime;
-    
+
     public CombatDpsAnalysis(String _initiator, AnalysisHandler _instance) {
         super(_initiator, _instance);
     }
 
     @Override
-    public void Setup(){
-                while(waitingForData){
+    public void Setup() {
+        while (waitingForData) {
             try {
                 sleep(100);
             } catch (InterruptedException ex) {
@@ -32,20 +33,21 @@ public class CombatDpsAnalysis extends Analysis implements Plugable{
             }
         }
     }
+
     @Override
     void run() {
 
     }
 
-    @Plug(socket = {DamageAnalysis.class,CombatTimeAnalysis.class})
+    @Plug(socket = {DamageAnalysis.class, CombatTimeAnalysis.class})
     @Override
     public void Plug(Result data, String Sender) {
-        if(Sender.contains("CombatTime")){
+        if (Sender.contains("CombatTime")) {
             CombatTime = data;
-        }else{
+        } else {
             Damage = data;
         }
         waitingForData = !(Damage != null && CombatTime != null);
     }
-    
+
 }

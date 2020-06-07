@@ -106,13 +106,19 @@ class DropZone extends Component {
     changeUnit(evt) {
         evt.persist()
         this.setState({
-            selectedUnit: evt.target.value.replace('"','')
+            selectedUnit: evt.target.value.replace('"', '')
         })
     }
 
     render() {
         return (
             <div>
+                <div>
+                    <form action="http://localhost:8080/jpareststarter/api/analyze/upload?initiator=hello" method="post" enctype="multipart/form-data">
+                        <input name="file" id="filename" type="file" />
+                        <button name="submit" type="submit">Upload</button>
+                    </form>
+                </div>
                 <Dropzone onDrop={file => this.validateFile(file)}>
                     {({ getRootProps, getInputProps }) => (
                         <section>

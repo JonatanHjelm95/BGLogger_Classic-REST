@@ -17,7 +17,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.cettia.Server;
 import static io.cettia.ServerSocketPredicates.tag;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import static java.lang.Thread.sleep;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -45,14 +47,14 @@ public class AnalysisHandler {
         return "";
     }
 
-    public AnalysisHandler(String initiator, JsonArray data) throws IOException, InterruptedException {
+    public AnalysisHandler(String initiator, InputStream inputStream) throws IOException, InterruptedException {
         eh = new EventHandler();
         this.initiator = initiator;
         analysis.add(new ActionAnalysis(initiator, this));
         analysis.add(new DamageAnalysis(initiator, this));
         analysis.add(new CombatTimeAnalysis(initiator, this));
         AddListeners();
-        FileHandler.readFromJson(eh, data);
+        FileHandler.fileInputStream(eh, inputStream);
         while (!eh.eventlogComplete()) {
             sleep(100);
         }

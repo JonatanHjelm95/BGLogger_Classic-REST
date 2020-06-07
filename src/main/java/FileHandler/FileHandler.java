@@ -17,6 +17,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -34,22 +35,11 @@ public class FileHandler {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    public static void FileReaderFromBase64(EventHandler eh, String encodedData) throws FileNotFoundException, IOException {
-        Arrays.asList(new String(Base64.getDecoder()
-                .decode(encodedData)).split("\n"))
-                .stream().map(line -> createInput(line)).collect(Collectors.toList())
-                .forEach((i) -> {
-                    eh.addEvent(i);
-                });
-        eh.endFile();
-    }
-
     public static void FileReader(EventHandler eh, String path) throws FileNotFoundException, IOException {
         List<Input> list = new ArrayList();
         try {
             try (BufferedReader reader = Files.newBufferedReader(Paths.get(path))) {
                 list = reader.lines().map(line -> createInput(line)).collect(Collectors.toList());
-
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -106,8 +96,32 @@ public class FileHandler {
                 String line = sc.nextLine();
                 eh.addEvent(createInput(line));
                 // System.out.println(line);
+            }           
+            // note that Scanner suppresses exceptions
+            if (sc.ioException() != null) {
+                throw sc.ioException();
             }
-           
+        } finally {
+            System.out.println("File Read");
+            eh.endFile();
+            if (inputStream != null) {
+                inputStream.close();
+            }
+            if (sc != null) {
+                sc.close();
+            }            
+        }
+    }
+
+    public static void fileInputStream(EventHandler eh, InputStream inputStream) throws FileNotFoundException, IOException {
+        Scanner sc = null;
+        try {
+            sc = new Scanner(inputStream, "UTF-8");
+            while (sc.hasNextLine()) {
+                String line = sc.nextLine();
+                eh.addEvent(createInput(line));
+                // System.out.println(line);
+            }           
             // note that Scanner suppresses exceptions
             if (sc.ioException() != null) {
                 throw sc.ioException();
@@ -124,7 +138,7 @@ public class FileHandler {
             
         }
     }
-
+    
     public static void readFromJson(EventHandler eh, JsonArray data) {
         for (int i = 0; i < data.size()-1; i++) {
                 eh.addEvent(createInputFromJson(GSON.fromJson(data.get(i), String.class)));
