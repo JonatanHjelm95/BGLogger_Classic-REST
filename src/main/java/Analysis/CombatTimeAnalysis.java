@@ -15,6 +15,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -90,31 +91,51 @@ public class CombatTimeAnalysis extends Analysis {
         combatLen.Name = "Combat Length in Seconds";
         ResultSet.addData(minAvgMax);
         ResultSet.addData(combatLen);
-    //    ResultSet.addPlot(createCombatTimeline(combatEnd, combatStart));
+        ResultSet.addPlot(createCombatTimeline(combatLen, combatStart));
 
     }
 
-    public Plot createCombatTimeline(DataLine combatEnd, DataLine combatStart) {
+    public Plot createCombatTimeline(DataLine combatLen, DataLine combatStart) {
         Plot timeline = new Plot();
         timeline.Name = "CombatTimeline";
-        double end = combatEnd.data.get(combatEnd.data.size() - 1);
+        double end = combatStart.data.get(combatStart.data.size() - 1);
+        int e = (int) end;
         boolean inCombat = false;
-        Map<Integer, Double> timelineMap = new HashMap<>();
-        for (int i = 0; i < end; i++) {
-            for (int j = 0; j < combatEnd.data.size(); j++) {
-                inCombat = i >= combatStart.data.get(j) && i < combatEnd.data.get(j);
+        List<Double> X_values = new ArrayList();
+        List<Double> Y_values = new ArrayList();
+        double x = 0;
+        double previousX = 0;
+        double secondsOutOfCombat = 0;
+        double secondsInCombat = 0;
+        double currentSecond = 0;
+        for (int i = 0; i < combatStart.data.size() - 1; i++) {
+            if (i == 0) {
+                secondsOutOfCombat = combatStart.data.get(i + 1);
+                secondsInCombat = combatLen.data.get(i + 1);
+            } else {
+                secondsOutOfCombat = combatStart.data.get(i + 1) - currentSecond;
+                secondsInCombat = combatLen.data.get(i + 1);
             }
-            if(inCombat){
-                timelineMap.put(i, 1.0);
+            for (int j = 0; j < secondsOutOfCombat; j++) {
+                X_values.add((double) currentSecond);
+                Y_values.add((double) 0);
+                currentSecond++;
             }
-            else{
-                timelineMap.put(i, 0.0);
+            for (int j = 0; j < secondsInCombat; j++) {
+                X_values.add((double) currentSecond);
+                Y_values.add((double) 1);
+                currentSecond++;
             }
-        }
-        timeline.X = timelineMap.keySet().toArray(new Double[timelineMap.keySet().size()]);
-        timeline.Y = timelineMap.values().toArray(new Double[timelineMap.values().size()]);
+          }
+        timeline.Y = Y_values.toArray(new Double[Y_values.size()]);
+        timeline.X = X_values.toArray(new Double[X_values.size()]);
         return timeline;
 
+    }
+
+    public Boolean inCombat(int sec, double start, double end) {
+
+        return sec >= start && sec < end;
     }
 
     @Listener

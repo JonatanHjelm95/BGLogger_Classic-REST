@@ -7,20 +7,40 @@ class TimelineChart extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            endOfCombat: this.props.data[1].data,
-            startOfCombat: this.props.data[0].data,
-
-            ic: [],
-            timeData: this.props.data,
             data: {
-                labels: [0],
+                labels: this.props.X,
                 datasets: [{
                     label: "Timeline",
-                    data: []
+                    data: this.props.Y,
+                    spanGaps: true,
+                    fill: 'origin',
+                    lineTension: 0,
+                    borderWidth: 0,
                 }],
             }
         }
-        this.createTimeline()
+        //this.createTimeline()
+    }
+
+    createTimeline(){
+        let X = []
+        let Y = []
+        let xObj = this.props.data.X
+        let yObj = this.props.data.Y
+        for(var i = 0; i < this.getObjSize(xObj); i++){
+            X.push(parseInt(xObj[i]))
+            Y.push(parseInt(yObj[i]))
+        }
+        console.log(typeof(X), Y)
+        this.setState({
+            data: {
+                labels: Y,
+                datasets: [{
+                    label: "Timeline",
+                    data: X
+                }],
+            }
+        })
 
     }
     componentDidMount() {
@@ -34,7 +54,7 @@ class TimelineChart extends Component {
         }
         return size;
     }
-    createTimeline() {
+    /* createTimeline() {
         let end = this.state.endOfCombat[this.getObjSize(this.state.endOfCombat) - 1]
         this.setState({
             data: {
@@ -45,7 +65,7 @@ class TimelineChart extends Component {
                 }],
             }
         })
-    }
+    } */
 
     createTimeData(end) {
         let ooc = this.state.endOfCombat
@@ -124,11 +144,20 @@ class TimelineChart extends Component {
                     height={80}
                     width={window.innerWidth - 20}
                     options={{
+                        elements: {
+                            point:{
+                                radius: 0
+                            }
+                        },
                         scales: {
                             yAxes: [{
                                 ticks: {
-                                    beginAtZero: true
-                                }
+                                    beginAtZero: true,
+                                    display: false,
+                                },
+                                gridLines: {
+                                    color: "rgba(0, 0, 0, 0)",
+                                }   
                             }],
                             xAxes: [{
                                 ticks: {

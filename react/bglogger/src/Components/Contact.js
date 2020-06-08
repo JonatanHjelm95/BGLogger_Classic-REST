@@ -131,11 +131,11 @@ class Contact extends React.Component {
     }
 
     createPlot(plot, division) {
-        return <ChartInterface chartname={plot.Name} X={plot.Y} Y={plot.X} division={division} />
+        return <ChartInterface chartname={plot.Name} Y={plot.Y} X={plot.X} division={division} />
     }
 
-    createTimeline(data) {
-        return <TimelineChart data={data} />
+    createTimeline(plot) {
+        return <TimelineChart X={plot.X} Y={plot.Y} />
     }
 
     render() {
@@ -148,14 +148,14 @@ class Contact extends React.Component {
                     <tbody>
                         {this.state.stream.map(item => {
                            if (item.sender !== undefined && item.sender.toString().includes("Analysis.CombatTimeAnalysis")) {
-                                console.log(item.text)
-                                /* return (
+                                console.log(item.text.plots)
+                                return (
                                     <div>
                                         <tr><th>Combat Time Analysis</th></tr>
-                                        <tr><td>{this.createTimeline(item.text.data)}</td></tr>
+                                        <tr><td>{this.createTimeline(item.text.plots[0])}</td></tr>
                                     </div>
                                     //<tr><td>{item.data[0].Name}</td></tr>
-                                ) */
+                                )
                             }
                         })}
                         {this.state.stream.map(item => {
@@ -187,7 +187,6 @@ class Contact extends React.Component {
                                 console.log(item.text.data)
                                 return (
                                     <div>
-                                        <tr><th>DPS Analysis</th><th></th></tr>
                                         <tr><td>{this.createDPSAnalysis(item.text)}</td><td>{this.createDPSAnalysisTable(item.text.data[0])}</td></tr>
                                     </div>
                                     //<tr><td>{item.data[0].Name}</td></tr>

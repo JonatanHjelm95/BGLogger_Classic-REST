@@ -9,10 +9,10 @@ class ChartInterface extends Component {
         this.state = {
             division: this.props.division,
             data: {
-                labels: this.props.Y,
+                labels: this.props.X,
                 datasets: [{
                     label: this.props.chartname,
-                    data: this.props.X
+                    data: this.props.Y
                 }],
             }
         }
@@ -155,7 +155,7 @@ class ChartInterface extends Component {
  
                             <Line
 
-                                height={150}
+                                height={"auto"}
                                 width={width}
                                 options={{
                                 }}
