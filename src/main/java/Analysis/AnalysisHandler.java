@@ -43,10 +43,6 @@ public class AnalysisHandler {
     private EventHandler eh;
     private String initiator;
 
-    public String getSubmittingPlayer() {
-        return "";
-    }
-
     public AnalysisHandler(String initiator, InputStream inputStream) throws IOException, InterruptedException {
         eh = new EventHandler();
         this.initiator = initiator;
@@ -63,32 +59,17 @@ public class AnalysisHandler {
         //StartAnalysis();   
     }
 
-    public AnalysisHandler(String initiator, String data, String str) throws IOException, InterruptedException {
-        eh = new EventHandler();
-        this.initiator = initiator;
-        analysis.add(new ActionAnalysis(initiator, this));
-        analysis.add(new DamageAnalysis(initiator, this));
-        analysis.add(new CombatTimeAnalysis(initiator, this));
-        analysis.add(new CombatDpsAnalysis(initiator, this));
-        AddListeners();
-        FileHandler.fileInputStream(eh, data);
-        while (!eh.eventlogComplete()) {
-            sleep(100);
-        }
-        StartAnalysis();
-        //StartAnalysis();   
-    }
-
     private void AddListeners() {
-        for (Analysis analysi : analysis) {
-            Class obj = analysi.getClass();
-            for (Method method : obj.getMethods()) {
-                if (method.isAnnotationPresent(Listener.class)) {
-                    Listener l = method.getAnnotation(Listener.class);
-                    eh.addListener(l.event(), new ListenerHolder(method, analysi));
-                }
-            }
-        }
+        analysis.stream()
+                .forEach(a -> {
+                    Class obj = a.getClass();
+                    for (Method method : obj.getMethods()) {
+                        if (method.isAnnotationPresent(Listener.class)) {
+                            Listener l = method.getAnnotation(Listener.class);
+                            eh.addListener(l.event(), new ListenerHolder(method, a));
+                        }
+                    }
+                });
     }
 
     public void StartAnalysis() {
@@ -102,21 +83,17 @@ public class AnalysisHandler {
         analysis.add(_analysi);
     }
 
-    void returnPlot(Plot p) {
-
-    }
-
-    void submitResult(Result res, Class<?> sender) {
+    void submitResult(ResultInterface res, Class<?> sender) {
         System.out.println("Result submitted from: " + sender.getName());
         //TODO hand to frontend
-        
+
         Gson GSON = new GsonBuilder().setPrettyPrinting().create();
         Server S = CettiaBootstrap.getServer();
         Map<String, Object> output = new LinkedHashMap<>();
         output.put("sender", sender.getName());
         output.put("text", GSON.toJson(res));
         S.find(tag("channel:log")).send("message", output);
-        
+
         analysis.stream()
                 .filter(a -> Arrays.asList(a.getClass().getInterfaces()).contains(Plugable.class))
                 .forEach(a -> {

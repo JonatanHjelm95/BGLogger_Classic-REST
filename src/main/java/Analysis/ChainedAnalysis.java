@@ -36,7 +36,7 @@ public class ChainedAnalysis extends Analysis implements Plugable{
 
     @Plug(socket = {ActionAnalysis.class,DamageAnalysis.class})
     @Override
-    public void Plug(Result data,String Sender) {
+    public void Plug(ResultInterface data,String Sender) {
         System.out.println("recieved Data from: "+Sender+" now finishing up my stuff");
         iWait=false;
                 

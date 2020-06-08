@@ -21,8 +21,8 @@ import java.util.stream.IntStream;
 public class CombatDpsAnalysis extends Analysis implements Plugable {
 
     private boolean waitingForData = true;
-    Result Damage;
-    Result CombatTime;
+    ResultInterface Damage;
+    ResultInterface CombatTime;
 
     public CombatDpsAnalysis(String _initiator, AnalysisHandler _instance) {
         super(_initiator, _instance);
@@ -93,7 +93,7 @@ public class CombatDpsAnalysis extends Analysis implements Plugable {
 
     @Plug(socket = {DamageAnalysis.class, CombatTimeAnalysis.class})
     @Override
-    public void Plug(Result data, String Sender) {
+    public void Plug(ResultInterface data, String Sender) {
         if (Sender.contains("CombatTime")) {
             CombatTime = data;
         } else {

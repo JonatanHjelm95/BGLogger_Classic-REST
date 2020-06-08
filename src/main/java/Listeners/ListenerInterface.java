@@ -3,15 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Analysis;
-
-import java.util.List;
+package Listeners;
 
 /**
  *
  * @author Martin
  */
-
-public interface Plugable {
-    public void Plug(ResultInterface data,String Sender);
+public interface ListenerInterface {
+    public void invoke(Object params);
 }

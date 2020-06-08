@@ -14,16 +14,17 @@ import java.util.logging.Logger;
  *
  * @author Martin
  */
-public class ListenerHolder {
+public class ListenerHolder implements ListenerInterface{
 
-    private Method method;
-    private Object obj;
+    private final Method method;
+    private final Object obj;
 
     public ListenerHolder(Method _method, Object _obj) {
         this.method = _method;
         this.obj = _obj;
     }
 
+    @Override
     public void invoke(Object params) {
         
         try {

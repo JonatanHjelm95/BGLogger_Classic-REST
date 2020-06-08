@@ -25,7 +25,7 @@ import java.util.logging.Logger;
 public class EventHandler {
 
     public boolean Finished = false;
-    ExecutorService ListenerInvoker = Executors.newCachedThreadPool();
+    private final ExecutorService ListenerInvoker = Executors.newCachedThreadPool();
     private final Map< MyEventType, List<ListenerHolder>> Listeners = new HashMap<>();
     private boolean endOfFile = false;
     private boolean eventsHandled = false;

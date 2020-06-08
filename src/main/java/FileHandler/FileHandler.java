@@ -38,9 +38,9 @@ public class FileHandler {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
 
-    private static Input createInput(String line) throws Exception {
+    private static Input createInput(String line) throws IllegalArgumentException {
         if(!line.matches("^.*\\d+\\/\\d+.*")){
-            throw new Exception();
+            throw new  IllegalArgumentException();
         }
         //Splitting on whitespaces IOT get date and time
         String[] dates = line.split(" ");
@@ -55,57 +55,7 @@ public class FileHandler {
             return new Input(date, time, eventSplit, MyEventType.OTHER);
         }
     }
-
-    private static Input createInputFromJson(String line) {
-        //String line = GSON.fromJson(json, String.class).replace("\\", "");
-
-        //Splitting on whitespaces IOT get date and time
-        String[] lineSplit = line.split("  ");
-        String[] dates = lineSplit[0].split(" ");
-        String date = dates[0];
-        String time = dates[1];
-        String[] eventString = lineSplit[1].split(",");
-        try {
-
-            return new Input(date, time, eventString, MyEventType.valueOf(eventString[0]));
-        } catch (IllegalArgumentException e) {
-            return new Input(date, time, eventString, MyEventType.OTHER);
-        }
-    }
-
-    private static boolean advancedCombatLog(String line) {
-        return Integer.parseInt(line.split(",")[3]) == 1;
-    }
-
-    public static void fileInputStream(EventHandler eh, String data) throws FileNotFoundException, IOException {
-        FileInputStream inputStream = null;
-        Scanner sc = null;
-        try {
-            inputStream = new FileInputStream(data);
-            sc = new Scanner(inputStream, "UTF-8");
-            while (sc.hasNextLine()) {
-                String line = sc.nextLine();
-                eh.addEvent(createInput(line));
-                // System.out.println(line);
-            }
-            // note that Scanner suppresses exceptions
-            if (sc.ioException() != null) {
-                throw sc.ioException();
-            }
-        } catch (Exception ex) {
-            Logger.getLogger(FileHandler.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            System.out.println("File Read");
-            eh.endFile();
-            if (inputStream != null) {
-                inputStream.close();
-            }
-            if (sc != null) {
-                sc.close();
-            }
-        }
-    }
-
+  
     public static void fileInputStream(EventHandler eh, InputStream inputStream) throws FileNotFoundException, IOException {
         Scanner sc = null;
         try {
@@ -115,14 +65,10 @@ public class FileHandler {
                     try {
                         Input i = createInput(line);
                         eh.addEvent(i);
-                    } catch (Exception e) {
+                    } catch (IllegalArgumentException e) {
                         continue;
                     }
-                }
-                
-
-                // System.out.println(line);
-            
+                }            
             // note that Scanner suppresses exceptions
             if (sc.ioException() != null) {
                 throw sc.ioException();
@@ -138,21 +84,5 @@ public class FileHandler {
             }
 
         }
-    }
-
-    public static void readFromJson(EventHandler eh, JsonArray data) {
-        for (int i = 0; i < data.size() - 1; i++) {
-            eh.addEvent(createInputFromJson(GSON.fromJson(data.get(i), String.class)));
-//            try {
-//                
-//            }catch (ArrayIndexOutOfBoundsException e){
-//                
-//            }
-        }
-
-    }
-
-    public static void main(String[] args) throws IOException {
-        fileInputStream(new EventHandler(), "C:\\Users\\jonab\\.ssh\\4sem\\advProgramming\\BGLogger_Classic\\WoWCombatLog.txt");
     }
 }
