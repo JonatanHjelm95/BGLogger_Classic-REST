@@ -25,73 +25,72 @@ import java.util.logging.Logger;
 public class EventHandler {
 
     public boolean Finished = false;
-
-    private Map< MyEventType, List<ListenerHolder>> Listeners = new HashMap<>();
+    ExecutorService ListenerInvoker = Executors.newCachedThreadPool();
+    private final Map< MyEventType, List<ListenerHolder>> Listeners = new HashMap<>();
     private boolean endOfFile = false;
     private boolean eventsHandled = false;
+
     public EventHandler() {
-        
-        ExecutorService executor = Executors.newFixedThreadPool(1);
-        Runnable runnableTask = () -> {            
-                while (!endOfFile || eventQue.size()>0) {
-                    Event _event;
-                    try {
-                        _event = getEvent();
-                        invokeListeners(_event);
-                    } catch (Exception ex) {
-                        Logger.getLogger(EventHandler.class.getName()).log(Level.SEVERE, null, ex);
-                        continue;
+
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        Runnable runnableTask = () -> {
+            while (!endOfFile || eventQue.size() > 0) {
+                Event _event;
+                try {
+                    if (eventsHandled) {
+                        break;
                     }
-                    
+                    _event = getEvent();
+                    invokeListeners(_event);
+                } catch (Exception ex) {
+                    Logger.getLogger(EventHandler.class.getName()).log(Level.SEVERE, null, ex);
+                    continue;
                 }
-                eventsHandled = true;
+
+            }
+            eventsHandled = true;
+            ListenerInvoker.shutdown();
 
         };
         executor.submit(runnableTask);
+        executor.submit(runnableTask);
         executor.shutdown();
     }
-    public void endFile(){
-        endOfFile =true;
+
+    public void endFile() {
+        endOfFile = true;
     }
-    public boolean eventlogComplete(){
+
+    public boolean eventlogComplete() {
         return eventsHandled;
     }
-    
-    /*
-    public static EventHandler getInstance() {
-        if (Instance == null) {
-            Instance = new EventHandler();
-        }
-
-        return Instance;
-    }*/
 
     private List<Event> eventQue = new ArrayList<>();
     ReentrantLock lock = new ReentrantLock();
 
     public void addEvent(Event _event) {
-        
-        lock.lock();
+
+        //lock.lock();
         try {
-            System.out.println("adding event of type:"+ _event.getEventType());
+            //System.out.println("adding event of type:" + _event.getEventType());
             eventQue.add(_event);
         } finally {
-            lock.unlock();
+            //lock.unlock();
         }
     }
 
     private Event getEvent() throws Exception {
+        lock.lock();
         while (eventQue.size() == 0 && !endOfFile) {
             sleep(100);
         }
-        lock.lock();
+
         try {
             Event _event = eventQue.get(0);
             eventQue.remove(0);
             return _event;
         } finally {
             lock.unlock();
-
         }
     }
 
@@ -110,27 +109,28 @@ public class EventHandler {
     }
 
     private void invokeListeners(Event _event) {
-        ExecutorService executor = Executors.newCachedThreadPool();
-        if (Listeners.get(MyEventType.ANY) != null) {
-            Runnable task0 = () -> {
-                //List<ListenerHolder> _listeners = Listeners.get(MyEventType.ANY);
-                for (ListenerHolder _listener : Listeners.get(MyEventType.ANY)) {
-                    _listener.invoke(_event);
-                }
-            };                   
-            executor.submit(task0);
+        if(_event == null)return;
+        try {
+            if (Listeners.get(MyEventType.ANY) != null) {
+                Runnable task0 = () -> {
+                    //List<ListenerHolder> _listeners = Listeners.get(MyEventType.ANY);
+                    Listeners.get(MyEventType.ANY).stream()
+                            .forEach(listenerholder -> listenerholder.invoke(_event));
+                };
+                ListenerInvoker.submit(task0);
+            }
+            if (Listeners.get(_event.getEventType()) != null) {
+                Runnable task1 = () -> {
+                    //List<ListenerHolder> _listeners = Listeners.get(_event.getEventType());
+                    Listeners.get(_event.getEventType()).stream()
+                            .forEach(listenerholder -> listenerholder.invoke(_event));
+                };
+                ListenerInvoker.submit(task1);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            System.out.println(_event.getEventType());
         }
-       
-        if (Listeners.get(_event.getEventType())!= null) {
-            Runnable task1 = () -> {
-                //List<ListenerHolder> _listeners = Listeners.get(_event.getEventType());
-                for (ListenerHolder _listener : Listeners.get(_event.getEventType())) {
-                    _listener.invoke(_event);
-                }
-            };
-            executor.submit(task1);
-        }
-        executor.shutdown();
     }
 
 }
